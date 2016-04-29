@@ -1,9 +1,25 @@
-﻿<Application x:Class="NetworkSniffer.App"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+<Application x:Class="NetworkSniffer.App" 
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:NetworkSniffer"
-             StartupUri="MainWindow.xaml">
+             xmlns:vm="clr-namespace:NetworkSniffer.ViewModel" 
+             xmlns:views="clr-namespace:NetworkSniffer.View"
+             xmlns:local="clr-namespace:NetworkSniffer" 
+             StartupUri="View/MainWindow.xaml" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             d1p1:Ignorable="d" 
+             xmlns:d1p1="http://schemas.openxmlformats.org/markup-compatibility/2006">
     <Application.Resources>
-         
-    </Application.Resources>
+        <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True"/>
+
+        <!--
+            Data templates definitions for dynamical rendering of views for a particular viewmodel type.
+        -->
+        <DataTemplate DataType="{x:Type vm:SnifferViewModel}">
+            <views:SinfferView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:AnalyzerViewModel}">
+            <views:AnalyzerView />
+        </DataTemplate>
+    
+  </Application.Resources>
 </Application>

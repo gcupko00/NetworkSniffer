@@ -1,0 +1,49 @@
+﻿<UserControl x:Class="NetworkSniffer.View.SinfferView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:NetworkSniffer.View"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="420"
+             MinHeight="300"
+             MinWidth="420"
+             HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="3*"></RowDefinition>
+            <RowDefinition Height="2*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="4*"></ColumnDefinition>
+            <ColumnDefinition Width="5*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <DockPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+            <Button Content="Start"  HorizontalAlignment="Left" VerticalAlignment="Center" Height="25" Padding="10 0" Margin="5 0"></Button>
+            <TextBox VerticalAlignment="Center" Height="25" MinWidth="100" Padding="3"></TextBox>
+            <Button Content="Filter" VerticalAlignment="Center" Height="25" Padding="10 0" Margin="5 0"></Button>
+            <Button Content="Reset" VerticalAlignment="Center" Height="25" Padding="10 0" Margin="0 0 5 0"></Button>
+            <Button Content="Clear" VerticalAlignment="Center" Height="25" Padding="10 0"></Button>
+            <Button Content="Analyzer" HorizontalAlignment="Right" VerticalAlignment="Center" Height="25" Width="70" Padding="10 0" Margin="5 0"
+                    DataContext="{Binding Main, Source={StaticResource Locator}}"
+                    Command="{Binding OpenAnalyzer}"></Button>
+        </DockPanel>
+        <ListView Grid.Row="1" Grid.ColumnSpan="2">
+            
+        </ListView>
+        <TreeView Grid.Row="2">
+            
+        </TreeView>
+        <DockPanel Grid.Row="2" Grid.Column="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <RichTextBox Grid.Column="0" IsReadOnly="True"></RichTextBox>
+                <RichTextBox Grid.Column="1" IsReadOnly="True"></RichTextBox>
+            </Grid>            
+        </DockPanel>
+    </Grid>
+</UserControl>
