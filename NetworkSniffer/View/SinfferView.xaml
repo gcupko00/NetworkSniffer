@@ -5,9 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:NetworkSniffer.View"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="420"
+             d:DesignHeight="300" d:DesignWidth="450"
              MinHeight="300"
-             MinWidth="420"
+             MinWidth="450"
              HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
     <Grid>
         <Grid.RowDefinitions>
@@ -21,6 +21,7 @@
         </Grid.ColumnDefinitions>
         <DockPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
             <Button Content="Start"  HorizontalAlignment="Left" VerticalAlignment="Center" Height="25" Padding="10 0" Margin="5 0"></Button>
+            <Button Content="Stop"  HorizontalAlignment="Left" VerticalAlignment="Center" Height="25" Padding="10 0" Margin="0 0 5 0"></Button>
             <TextBox VerticalAlignment="Center" Height="25" MinWidth="100" Padding="3"></TextBox>
             <Button Content="Filter" VerticalAlignment="Center" Height="25" Padding="10 0" Margin="5 0"></Button>
             <Button Content="Reset" VerticalAlignment="Center" Height="25" Padding="10 0" Margin="0 0 5 0"></Button>
