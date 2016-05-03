@@ -28,6 +28,7 @@ namespace NetworkSniffer.ViewModel
             OpenAnalyzer = new RelayCommand(() => OpenAnalyzerExecute());
             OpenSniffer = new RelayCommand(() => OpenSnifferExecute());
             StartCapture = new RelayCommand(() => StartCaptureExecute());
+            StopCapture = new RelayCommand(() => StopCaputureExecute());
 
             DeviceAddressList = new ObservableCollection<string>();
             GetAddresses();
@@ -102,7 +103,30 @@ namespace NetworkSniffer.ViewModel
 
         private void StartCaptureExecute()
         {
-            monitor = new InterfaceMonitor(selectedAddress);
+            if (SelectedAddress == "" || SelectedAddress == null)
+            {
+                MessageBox.Show("Please select device address");
+            }
+            else
+            {
+                if (monitor == null ) {
+                    monitor = new InterfaceMonitor(SelectedAddress);
+
+                    //testing
+                    MessageBox.Show("created monitro" + monitor.ToString());
+                }
+            }
+        }
+
+        public ICommand StopCapture { get; private set; }
+
+        private void StopCaputureExecute()
+        {
+            monitor.StopCapture();
+            monitor = null;
+
+            //testing
+            MessageBox.Show("deleted monitor");
         }
     }
 }

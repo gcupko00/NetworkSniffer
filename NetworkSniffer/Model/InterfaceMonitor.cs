@@ -33,12 +33,14 @@ namespace NetworkSniffer.Model
              * Second option should be TRUE */
             socket.IOControl(IOControlCode.ReceiveAll, byteTrue, byteOut);
 
-            socket.BeginReceive();
+            //socket.BeginReceive();
         }
 
         public void StopCapture()
         {
             socket.Close();
+            socket = null;
+            ipAddress = null;
         }
     }
 }
