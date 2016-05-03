@@ -20,6 +20,6 @@
         <DataTemplate DataType="{x:Type vm:AnalyzerViewModel}">
             <views:AnalyzerView />
         </DataTemplate>
-    
-  </Application.Resources>
+
+    </Application.Resources>
 </Application>
