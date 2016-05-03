@@ -78,9 +78,12 @@ namespace NetworkSniffer.ViewModel
         private void GetAddresses()
         {
             IPHostEntry HostEntry = Dns.GetHostEntry(Dns.GetHostName());
-            if (HostEntry.AddressList.Length > 0) {
+            if (HostEntry.AddressList.Length > 0)
+            {
                 foreach (IPAddress ip in HostEntry.AddressList)
+                {
                     DeviceAddressList.Add(ip.ToString());
+                }
             }
         }
 
