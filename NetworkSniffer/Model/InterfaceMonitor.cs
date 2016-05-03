@@ -32,7 +32,8 @@ namespace NetworkSniffer.Model
             /* ReceiveAll implies that all incoming and outgoing packets on the interface are captured.
              * Second option should be TRUE */
             socket.IOControl(IOControlCode.ReceiveAll, byteTrue, byteOut);
-            
+
+            //begin recieve            
         }
 
         public void StopCapture()
