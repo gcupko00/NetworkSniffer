@@ -4,8 +4,9 @@ using System.Windows.Input;
 using System.Collections.ObjectModel;
 using System.Net;
 using NetworkSniffer.Model;
-
-/*testing*/
+using System.Security.Principal;
+using System.Net.Sockets;
+using System;
 using System.Windows;
 
 namespace NetworkSniffer.ViewModel
@@ -81,7 +82,12 @@ namespace NetworkSniffer.ViewModel
             IPHostEntry HostEntry = Dns.GetHostEntry(Dns.GetHostName());
             if (HostEntry.AddressList.Length > 0) {
                 foreach (IPAddress ip in HostEntry.AddressList)
-                    DeviceAddressList.Add(ip.ToString());
+                {
+                    if (ip.AddressFamily == AddressFamily.InterNetwork)
+                    {
+                        DeviceAddressList.Add(ip.ToString());
+                    }
+                }
             }
         }
 
@@ -107,6 +113,10 @@ namespace NetworkSniffer.ViewModel
             {
                 MessageBox.Show("Please select device address");
             }
+            else if (!IsUserAdministrator())
+            {
+                MessageBox.Show("Please start program with administrator privileges");
+            }
             else
             {
                 if (monitor == null ) {
@@ -122,11 +132,42 @@ namespace NetworkSniffer.ViewModel
 
         private void StopCaputureExecute()
         {
-            monitor.StopCapture();
-            monitor = null;
+            if (monitor != null)
+            {
+                monitor.StopCapture();
+                monitor = null;
 
-            //testing
-            MessageBox.Show("deleted monitor");
+                //testing
+                MessageBox.Show("deleted monitor");
+            }
+        }
+
+        // Ovo bi trebalo ubacit u neku klasu. cili ovaj kod je organizirani kaos
+        public bool IsUserAdministrator()
+        {
+            bool isAdmin;
+            WindowsIdentity user = null;
+            try
+            {
+                //get the currently logged in user
+                user = WindowsIdentity.GetCurrent();
+                WindowsPrincipal principal = new WindowsPrincipal(user);
+                isAdmin = principal.IsInRole(WindowsBuiltInRole.Administrator);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                isAdmin = false;
+            }
+            catch (Exception ex)
+            {
+                isAdmin = false;
+            }
+            finally
+            {
+                if (user != null)
+                    user.Dispose();
+            }
+            return isAdmin;
         }
     }
 }
