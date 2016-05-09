@@ -77,6 +77,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Model\InterfaceMonitor.cs" />
+    <Compile Include="Model\IPHeader.cs" />
+    <Compile Include="Model\IPPacket.cs" />
+    <Compile Include="Model\TCPPacket.cs" />
+    <Compile Include="Model\UDPPacket.cs" />
     <Compile Include="ViewModel\AnalyzerViewModel.cs" />
     <Compile Include="ViewModel\SnifferViewModel.cs" />
     <Compile Include="View\AnalyzerView.xaml.cs">
