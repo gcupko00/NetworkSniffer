@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:NetworkSniffer.View"
+             xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="500"
              MinHeight="400"
@@ -36,11 +37,17 @@
                     Command="{Binding OpenAnalyzer}"></Button>
         </DockPanel>
         <ScrollViewer Grid.Row="1" Grid.ColumnSpan="2" HorizontalScrollBarVisibility="Auto">
-        <ListView>
+        <ListView ItemsSource="{Binding Path=PacketList}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="No." Width="Auto"></GridViewColumn>
-                    <GridViewColumn Header="Source IP" Width="130"></GridViewColumn>
+                    <GridViewColumn Header="Source IP" Width="130">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=IPPacket, diag:PresentationTraceSources.TraceLevel=High}"></TextBlock>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                     <GridViewColumn Header="Source Port" Width="100"></GridViewColumn>
                     <GridViewColumn Header="Destination IP" Width="130"></GridViewColumn>
                     <GridViewColumn Header="Destination Port" Width="100"></GridViewColumn>

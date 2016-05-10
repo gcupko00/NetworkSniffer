@@ -129,6 +129,7 @@ namespace NetworkSniffer.ViewModel
 
         private void ReceiveNewPacket(IPPacket newPacket)
         {
+            PacketList.Add(newPacket);
             IPAddress test = new IPAddress(newPacket.IPHeader[0].SourceIPAddress);
             MessageBox.Show(test.ToString());
         }
@@ -169,7 +170,7 @@ namespace NetworkSniffer.ViewModel
                     monitor.StartCapture();
 
                     //testing
-                    MessageBox.Show("created monitro" + monitor.ToString());
+                    MessageBox.Show("created monitor" + monitor.ToString());
                 }
             }
         }

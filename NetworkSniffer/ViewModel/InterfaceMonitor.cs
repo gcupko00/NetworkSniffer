@@ -61,8 +61,9 @@ namespace NetworkSniffer.Model
                 socket.BeginReceive(byteBufferData, 0, byteBufferData.Length,
                                     SocketFlags.None, new AsyncCallback(this.ReceiveData), null);
             }
-            catch
+            catch (Exception e)
             {
+                System.Windows.MessageBox.Show(e.Message.ToString());
                 StopCapture();
             }
 
