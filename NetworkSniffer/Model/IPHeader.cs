@@ -77,10 +77,10 @@ namespace NetworkSniffer.Model
                 HeaderChecksum = IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
 
                 // Next four bytes are source address
-                SourceIPAddress = (uint)(binaryReader.ReadInt32());
+                SourceIPAddress = new IPAddress((uint)(binaryReader.ReadInt32()));
 
                 // Last four bytes are destination address
-                DestinationIpAddress = (uint)(binaryReader.ReadInt32());
+                DestinationIpAddress = new IPAddress((uint)(binaryReader.ReadInt32()));
 
                 // *options
             }
@@ -131,9 +131,9 @@ namespace NetworkSniffer.Model
 
         public short HeaderChecksum { get; set; }
 
-        public uint SourceIPAddress { get; set; }
+        public IPAddress SourceIPAddress { get; set; }
 
-        public uint DestinationIpAddress { get; set; }
+        public IPAddress DestinationIpAddress { get; set; }
 
         // *options
         #endregion

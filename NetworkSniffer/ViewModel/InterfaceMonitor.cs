@@ -63,7 +63,8 @@ namespace NetworkSniffer.Model
             }
             catch (Exception e)
             {
-                System.Windows.MessageBox.Show(e.Message.ToString());
+                //test
+                //System.Windows.MessageBox.Show(e.Message.ToString(), "Receive data error");
                 StopCapture();
             }
 

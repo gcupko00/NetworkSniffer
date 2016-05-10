@@ -7,6 +7,7 @@ using NetworkSniffer.Model;
 using System.Net.Sockets;
 using System;
 using System.Windows;
+using System.Windows.Data;
 
 namespace NetworkSniffer.ViewModel
 {
@@ -20,6 +21,7 @@ namespace NetworkSniffer.ViewModel
         private AnalyzerViewModel analyzerViewModel = new AnalyzerViewModel();
 
         private InterfaceMonitor monitor;
+        private readonly object packetListLock = new object();
         #endregion
 
         #region Constructors
@@ -65,23 +67,13 @@ namespace NetworkSniffer.ViewModel
             set
             {
                 packetList = value;
-                RaisePropertyChanged("PacketList");
+                // Enables access to packetList from different threads
+                BindingOperations.EnableCollectionSynchronization(packetList, packetListLock);
             }
         }
 
         private ObservableCollection<string> deviceAddressList;
-        public ObservableCollection<string> DeviceAddressList
-        {
-            get
-            {
-                return deviceAddressList;
-            }
-            private set
-            {
-                deviceAddressList = value;
-                RaisePropertyChanged("DeviceAddressList");
-            }
-        }
+        public ObservableCollection<string> DeviceAddressList { get; private set; }
 
         private string selectedAddress;
         public string SelectedAddress
@@ -130,8 +122,9 @@ namespace NetworkSniffer.ViewModel
         private void ReceiveNewPacket(IPPacket newPacket)
         {
             PacketList.Add(newPacket);
-            IPAddress test = new IPAddress(newPacket.IPHeader[0].SourceIPAddress);
-            MessageBox.Show(test.ToString());
+            //testing
+            //IPAddress test = new IPAddress(newPacket.IPHeader[0].SourceIPAddress);
+            //MessageBox.Show(test.ToString());
         }
         #endregion
 
@@ -170,7 +163,7 @@ namespace NetworkSniffer.ViewModel
                     monitor.StartCapture();
 
                     //testing
-                    MessageBox.Show("created monitor" + monitor.ToString());
+                    //MessageBox.Show("created monitor" + monitor.ToString());
                 }
             }
         }
@@ -185,7 +178,7 @@ namespace NetworkSniffer.ViewModel
                 monitor = null;
 
                 //testing
-                MessageBox.Show("deleted monitor");
+                //MessageBox.Show("deleted monitor");
             }
         }
         #endregion
