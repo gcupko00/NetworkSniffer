@@ -35,6 +35,7 @@ namespace NetworkSniffer.ViewModel
             StopCapture = new RelayCommand(() => StopCaputureExecute());
 
             DeviceAddressList = new ObservableCollection<string>();
+            PacketList = new ObservableCollection<IPPacket>();
             GetAddresses();
         }
         #endregion
@@ -51,6 +52,20 @@ namespace NetworkSniffer.ViewModel
             {
                 currentViewModel = value;
                 RaisePropertyChanged("CurrentViewModel");
+            }
+        }
+
+        private ObservableCollection<IPPacket> packetList;
+        public ObservableCollection<IPPacket> PacketList
+        {
+            get
+            {
+                return packetList;
+            }
+            set
+            {
+                packetList = value;
+                RaisePropertyChanged("PacketList");
             }
         }
 
