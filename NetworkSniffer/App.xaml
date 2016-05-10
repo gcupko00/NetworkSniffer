@@ -10,7 +10,6 @@
              xmlns:d1p1="http://schemas.openxmlformats.org/markup-compatibility/2006">
     <Application.Resources>
         <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True"/>
-
         <!--
             Data templates definitions for dynamical rendering of views for a particular viewmodel type.
         -->

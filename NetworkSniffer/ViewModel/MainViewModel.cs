@@ -4,7 +4,6 @@ using System.Windows.Input;
 using System.Collections.ObjectModel;
 using System.Net;
 using NetworkSniffer.Model;
-using System.Security.Principal;
 using System.Net.Sockets;
 using System;
 using System.Windows;
@@ -16,10 +15,14 @@ namespace NetworkSniffer.ViewModel
     /// </summary>
     public class MainViewModel : ViewModelBase
     {
+        #region Members
         private SnifferViewModel snifferViewModel = new SnifferViewModel();
         private AnalyzerViewModel analyzerViewModel = new AnalyzerViewModel();
 
         private InterfaceMonitor monitor;
+        #endregion
+
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
@@ -34,7 +37,9 @@ namespace NetworkSniffer.ViewModel
             DeviceAddressList = new ObservableCollection<string>();
             GetAddresses();
         }
+        #endregion
 
+        #region Properties
         private ViewModelBase currentViewModel;
         public ViewModelBase CurrentViewModel
         {
@@ -77,6 +82,22 @@ namespace NetworkSniffer.ViewModel
             }
         }
 
+        private string filter;
+        public string Filter
+        {
+            get
+            {
+                return filter;
+            }
+            set
+            {
+                filter = value;
+                RaisePropertyChanged("Filter");
+            }
+        }
+        #endregion
+
+        #region Methods
         private void GetAddresses()
         {
             IPHostEntry HostEntry = Dns.GetHostEntry(Dns.GetHostName());
@@ -89,8 +110,10 @@ namespace NetworkSniffer.ViewModel
                     }
                 }
             }
-        }
+        }        
+        #endregion
 
+        #region Commands
         public ICommand OpenAnalyzer { get; private set; }
         
         private void OpenAnalyzerExecute()
@@ -113,7 +136,7 @@ namespace NetworkSniffer.ViewModel
             {
                 MessageBox.Show("Please select device address");
             }
-            else if (!IsUserAdministrator())
+            else if (!UserIdentityHandler.IsUserAdministrator())
             {
                 MessageBox.Show("Please start program with administrator privileges");
             }
@@ -141,33 +164,6 @@ namespace NetworkSniffer.ViewModel
                 MessageBox.Show("deleted monitor");
             }
         }
-
-        // Ovo bi trebalo ubacit u neku klasu. cili ovaj kod je organizirani kaos
-        public bool IsUserAdministrator()
-        {
-            bool isAdmin;
-            WindowsIdentity user = null;
-            try
-            {
-                //get the currently logged in user
-                user = WindowsIdentity.GetCurrent();
-                WindowsPrincipal principal = new WindowsPrincipal(user);
-                isAdmin = principal.IsInRole(WindowsBuiltInRole.Administrator);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                isAdmin = false;
-            }
-            catch (Exception ex)
-            {
-                isAdmin = false;
-            }
-            finally
-            {
-                if (user != null)
-                    user.Dispose();
-            }
-            return isAdmin;
-        }
+        #endregion
     }
 }
