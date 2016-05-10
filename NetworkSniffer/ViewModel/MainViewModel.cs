@@ -126,6 +126,12 @@ namespace NetworkSniffer.ViewModel
                 }
             }
         }        
+
+        private void ReceiveNewPacket(IPPacket newPacket)
+        {
+            IPAddress test = new IPAddress(newPacket.IPHeader[0].SourceIPAddress);
+            MessageBox.Show(test.ToString());
+        }
         #endregion
 
         #region Commands
@@ -159,6 +165,8 @@ namespace NetworkSniffer.ViewModel
             {
                 if (monitor == null ) {
                     monitor = new InterfaceMonitor(SelectedAddress);
+                    monitor.newPacketEventHandler += new InterfaceMonitor.NewPacketEventHandler(ReceiveNewPacket);
+                    monitor.StartCapture();
 
                     //testing
                     MessageBox.Show("created monitro" + monitor.ToString());
