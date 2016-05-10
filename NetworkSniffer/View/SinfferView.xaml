@@ -36,8 +36,8 @@
             <Button Content="Analyzer" HorizontalAlignment="Right" VerticalAlignment="Center" Height="25" Width="70" Padding="10 0" Margin="5 0"
                     Command="{Binding OpenAnalyzer}"></Button>
         </DockPanel>
-        <ListView Grid.Row="1" Grid.ColumnSpan="2" 
-                  ItemsSource="{Binding Path=PacketList}">
+        <ListView Grid.Row="1" Grid.ColumnSpan="2" Height="Auto"
+                  ItemsSource="{Binding Path=PacketList, Mode=TwoWay}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="No." Width="Auto"></GridViewColumn> <!-- Kupim ti Pringles ako ovo riješiš čisto u XAML-u -->
@@ -58,7 +58,13 @@
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn Header="Destination Port" Width="100"></GridViewColumn>
-                    <GridViewColumn Header="Time" Width="100"></GridViewColumn>
+                    <GridViewColumn Header="Time" Width="100">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=ReceiveTime}"></TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                     <GridViewColumn Header="Type" Width="100"></GridViewColumn>
                     <GridViewColumn Header="Length" Width="100"></GridViewColumn>
                 </GridView>

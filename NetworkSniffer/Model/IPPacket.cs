@@ -113,6 +113,14 @@ namespace NetworkSniffer.Model
                 };
             }
         }
+
+        public string ReceiveTime
+        {
+            get
+            {
+                return DateTime.Now.ToString("HH:mm:ss:fff");
+            }
+        }
         #endregion
 
         #region Methods
