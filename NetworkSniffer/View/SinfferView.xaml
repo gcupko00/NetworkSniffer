@@ -32,7 +32,8 @@
             <TextBox VerticalAlignment="Center" Height="25" Width="100" Padding="3"></TextBox>
             <Button Content="Filter" VerticalAlignment="Center" Height="25" Padding="10 0" Margin="5 0"></Button>
             <Button Content="Reset" VerticalAlignment="Center" Height="25" Padding="10 0" Margin="0 0 5 0"></Button>
-            <Button Content="Clear" VerticalAlignment="Center" Height="25" Padding="10 0"></Button>
+            <Button Content="Clear" VerticalAlignment="Center" Height="25" Padding="10 0"
+                    Command="{Binding ClearPacketList}"></Button>
             <Button Content="Analyzer" HorizontalAlignment="Right" VerticalAlignment="Center" Height="25" Width="70" Padding="10 0" Margin="5 0"
                     Command="{Binding OpenAnalyzer}"></Button>
         </DockPanel>
@@ -65,8 +66,20 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="Type" Width="100"></GridViewColumn>
-                    <GridViewColumn Header="Length" Width="100"></GridViewColumn>
+                    <GridViewColumn Header="Type" Width="100">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=IPHeader[0].TransportProtocolName}"></TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Length" Width="100">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=IPHeader[0].TotalLength}"></TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                 </GridView>
             </ListView.View>
         </ListView>
