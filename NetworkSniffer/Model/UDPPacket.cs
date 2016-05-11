@@ -13,7 +13,7 @@ namespace NetworkSniffer.Model
     public class UDPPacket
     {
         #region Members
-        private byte[] byteUDPHeader;
+        private byte[] byteUDPHeader = new byte[8];
         private byte[] byteUDPMessage;
         #endregion
 
@@ -36,13 +36,13 @@ namespace NetworkSniffer.Model
                 byteUDPMessage = new byte[length - 8];
                 Array.Copy(byteBuffer, 8, byteUDPMessage, 0, length - 8);
 
-                UDPHeader = new List<UDPHeader>();
+                UDPHeader = new List<UDPHeader>();                
 
                 PopulatePacketContents();
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(e.Message, "Error parsing UDP packet", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         #endregion

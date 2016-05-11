@@ -23,7 +23,7 @@ namespace NetworkSniffer.Model
 
             Length = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
 
-            Checksum = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
+            Checksum = IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
         }
         #endregion
 
@@ -34,7 +34,7 @@ namespace NetworkSniffer.Model
 
         public ushort Length { get; set; }
 
-        public ushort Checksum { get; set; }
+        public short Checksum { get; set; }
         #endregion
     }
 }
