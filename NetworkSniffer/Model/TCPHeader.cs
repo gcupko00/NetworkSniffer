@@ -54,6 +54,53 @@ namespace NetworkSniffer.Model
 
         public ushort ReservedAndFlags { get; set; }
 
+        private string flags;
+        public string Flags
+        {
+            get
+            {
+                string value = "(";
+
+                if ((ReservedAndFlags & 0x01) != 0)
+                {
+                    value += "FIN, ";
+                }
+                if ((ReservedAndFlags & 0x02) != 0)
+                {
+                    value += "SYN, ";
+                }
+                if ((ReservedAndFlags & 0x04) != 0)
+                {
+                    value += "RST, ";
+                }
+                if ((ReservedAndFlags & 0x08) != 0)
+                {
+                    value += "PSH, ";
+                }
+                if ((ReservedAndFlags & 0x10) != 0)
+                {
+                    value += "ACK, ";
+                }
+                if ((ReservedAndFlags & 0x20) != 0)
+                {
+                    value += "URG";
+                }
+                value += ")";
+
+                if (value == "()")
+                {
+                    value = "";
+                }
+                else if (value.Contains(", )"))
+                {
+                    value = value.Remove(value.Length - 3, 2);
+                }
+
+                return value;
+            }
+
+        }
+
         public ushort WindowSize { get; set; }
 
         public ushort Checksum { get; set; }
