@@ -35,6 +35,7 @@ namespace NetworkSniffer.ViewModel
             OpenSniffer = new RelayCommand(() => OpenSnifferExecute());
             StartCapture = new RelayCommand(() => StartCaptureExecute());
             StopCapture = new RelayCommand(() => StopCaputureExecute());
+            ClearPacketList = new RelayCommand(() => ClearPacketListExecute());
 
             DeviceAddressList = new ObservableCollection<string>();
             PacketList = new ObservableCollection<IPPacket>();
@@ -180,6 +181,13 @@ namespace NetworkSniffer.ViewModel
                 //testing
                 //MessageBox.Show("deleted monitor");
             }
+        }
+
+        public ICommand ClearPacketList { get; private set; }
+
+        private void ClearPacketListExecute()
+        {
+            PacketList.Clear();
         }
         #endregion
     }

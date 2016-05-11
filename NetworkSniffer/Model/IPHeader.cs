@@ -75,7 +75,7 @@ namespace NetworkSniffer.Model
 
                 // Next two bytes are checksum
                 HeaderChecksum = IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
-
+                
                 // Next four bytes are source address
                 SourceIPAddress = new IPAddress((uint)(binaryReader.ReadInt32()));
 
@@ -128,6 +128,27 @@ namespace NetworkSniffer.Model
         public byte TimeToLive { get; set; }
 
         public byte TransportProtocol { get; set; }
+
+        private string transportProtocolName;
+        public string TransportProtocolName
+        {
+            get
+            {
+                switch (TransportProtocol)
+                {
+                    case 1:
+                        return "ICMP";
+                    case 2:
+                        return "IGMP";
+                    case 6:
+                        return "TCP";
+                    case 17:
+                        return "UDP";
+                    default:
+                        return "Unknown";
+                }
+            }
+        }
 
         public short HeaderChecksum { get; set; }
 
