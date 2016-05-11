@@ -164,10 +164,64 @@
                     </StackPanel>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type model:TCPHeader}">
-                    <TextBlock Text="TCP Header"></TextBlock>
+                    <StackPanel>
+                        <DockPanel>
+                            <TextBlock Text="   Source Port: "></TextBlock>
+                            <TextBlock Text="{Binding SourcePort}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="   Destination Port: "></TextBlock>
+                            <TextBlock Text="{Binding DestinationPort}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="   Sequence Number: "></TextBlock>
+                            <TextBlock Text="{Binding SequenceNumber}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="   Acknowledgment Number: "></TextBlock>
+                            <TextBlock Text="{Binding AcknowledgmentNumber }"></TextBlock>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="   Data Offset: "></TextBlock>
+                            <TextBlock Text="{Binding DataOffset}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="   Flags: "></TextBlock>
+                            <TextBlock Text="{Binding Flags}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="   Window Size: "></TextBlock>
+                            <TextBlock Text="{Binding WindowSize}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="   Checksum: "></TextBlock>
+                            <TextBlock Text="{Binding Checksum}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="   UrgentPointer: "></TextBlock>
+                            <TextBlock Text="{Binding UrgentPointer}"></TextBlock>
+                        </DockPanel>
+                    </StackPanel>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type model:UDPHeader}">
-                    <TextBlock Text="UDP Header"></TextBlock>
+                    <StackPanel>
+                        <DockPanel>
+                            <TextBlock Text="   Source Port: "></TextBlock>
+                            <TextBlock Text="{Binding SourcePort}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="   Destination Port: "></TextBlock>
+                            <TextBlock Text="{Binding DestinationPort}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="   Length: "></TextBlock>
+                            <TextBlock Text="{Binding Length}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="   Checksum: "></TextBlock>
+                            <TextBlock Text="{Binding Checksum}"></TextBlock>
+                        </DockPanel>
+                    </StackPanel>
                 </DataTemplate>
             </TreeView.Resources>
         </TreeView>

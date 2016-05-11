@@ -23,7 +23,7 @@ namespace NetworkSniffer.Model
 
             SequenceNumber = (uint)IPAddress.NetworkToHostOrder(binaryReader.ReadInt32());
 
-            AckknowledgmentNumber = (uint)IPAddress.NetworkToHostOrder(binaryReader.ReadInt32());
+            AcknowledgmentNumber = (uint)IPAddress.NetworkToHostOrder(binaryReader.ReadInt32());
 
             ReservedAndFlags  = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
 
@@ -31,11 +31,11 @@ namespace NetworkSniffer.Model
             DataOffset >>= 1;
             DataOffset <<= 1;
 
-            WindowSize = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadUInt16());
+            WindowSize = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
 
-            Checksum = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadUInt16());
+            Checksum = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
 
-            UrgentPointer = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadUInt16()); 
+            UrgentPointer = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16()); 
 
             // *options
         }
@@ -48,7 +48,7 @@ namespace NetworkSniffer.Model
 
         public uint SequenceNumber { get; set; }
 
-        public uint AckknowledgmentNumber { get; set; }
+        public uint AcknowledgmentNumber { get; set; }
 
         public byte DataOffset { get; set; }
 
