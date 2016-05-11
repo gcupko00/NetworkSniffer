@@ -39,6 +39,7 @@ namespace NetworkSniffer.ViewModel
 
             DeviceAddressList = new ObservableCollection<string>();
             PacketList = new ObservableCollection<IPPacket>();
+            SelectedPacketTree = new ObservableCollection<IPPacket>();
             GetAddresses();
         }
         #endregion
@@ -73,7 +74,28 @@ namespace NetworkSniffer.ViewModel
             }
         }
 
-        private ObservableCollection<string> deviceAddressList;
+        // packet selected in listview
+        private IPPacket selectedPacket;
+        public IPPacket SelectedPacket
+        {
+            get
+            {
+                return selectedPacket;
+            }
+            set
+            {
+                selectedPacket = value;
+                // There can be only one selected packet, so the list must be empty
+                SelectedPacketTree.Clear();
+                SelectedPacketTree.Add(selectedPacket);
+                RaisePropertyChanged("SelectedPacket");
+            }
+        }
+
+        // Since TreeView ItemsSource must be bound to the ObservableCollection, 
+        // selected packet must be ObservableCollection 
+        public ObservableCollection<IPPacket> SelectedPacketTree { get; private set; }
+
         public ObservableCollection<string> DeviceAddressList { get; private set; }
 
         private string selectedAddress;
