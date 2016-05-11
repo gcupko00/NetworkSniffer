@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Collections;
 using System.Windows.Data;
 using System.IO;
+using System.Windows;
 
 namespace NetworkSniffer.Model
 {
@@ -14,6 +15,7 @@ namespace NetworkSniffer.Model
         #region Members
         private byte[] byteTCPHeader;
         private byte[] byteTCPMessage;
+        private const uint TCPHeaderSize = 20;
         #endregion
 
         public TCPPacket(byte[] byteBuffer, int length)
@@ -27,11 +29,20 @@ namespace NetworkSniffer.Model
                 // Create BinaryReader out of MemoryStream
                 BinaryReader binaryReader = new BinaryReader(memoryStream);
 
+                // Copy header bytes from byteBuffer to byteTCPHeader
+                Array.Copy(byteBuffer, byteTCPHeader, TCPHeaderSize);
 
+                // Copy message data to byteTCPMessage
+                byteTCPMessage = new byte[length - TCPHeaderSize];
+                Array.Copy(byteBuffer, TCPHeaderSize, byteTCPMessage, 0, length - TCPHeaderSize);
+
+                TCPHeader = new List<TCPHeader>();
+
+                PopulatePacketContents();
             }
-            catch
+            catch (Exception e)
             {
-
+                MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -48,6 +59,14 @@ namespace NetworkSniffer.Model
                     new CollectionContainer() { Collection = TCPHeader }
                 };
             }
+        }
+        #endregion
+
+        #region Methods
+        private void PopulatePacketContents()
+        {
+            // add header info
+            TCPHeader.Add(new TCPHeader(byteTCPHeader, (int)TCPHeaderSize));
         }
         #endregion
     }
