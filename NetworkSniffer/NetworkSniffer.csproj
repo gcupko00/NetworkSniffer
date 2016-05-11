@@ -79,6 +79,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Model\TCPHeader.cs" />
+    <Compile Include="Model\UDPHeader.cs" />
     <Compile Include="ViewModel\InterfaceMonitor.cs" />
     <Compile Include="Model\IPHeader.cs" />
     <Compile Include="Model\IPPacket.cs" />

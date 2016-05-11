@@ -51,18 +51,21 @@ namespace NetworkSniffer.Model
                 byteHeaderLength *= 4;
 
                 // Next byte is TOS - ignore it for now
-                binaryReader.ReadByte();
+                // binaryReader.ReadByte();
 
-                // Next two bytes hold total length of the packet
-                ushort usTotalLength = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
+                // Next two bytes hold total length of the packet (usTotalLength == length)
+                // ushort usTotalLength = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
+
+                //testing
+                //MessageBox.Show(length.ToString() + ", " + usTotalLength.ToString());
 
                 // Copy header from byteBuffer to byteIPHeader
                 byteIPHeader = new byte[byteHeaderLength];
                 Array.Copy(byteBuffer, byteIPHeader, byteHeaderLength);
 
                 // Copy message data from byteBuffer to byteIPMessage
-                byteIPMessage = new byte[usTotalLength - byteHeaderLength];
-                Array.Copy(byteBuffer, byteHeaderLength, byteIPMessage, 0, usTotalLength - byteHeaderLength);
+                byteIPMessage = new byte[length - byteHeaderLength];
+                Array.Copy(byteBuffer, byteHeaderLength, byteIPMessage, 0, length - byteHeaderLength);
                 #endregion
 
                 IPHeader = new List<IPHeader>();
@@ -101,7 +104,7 @@ namespace NetworkSniffer.Model
         /// <summary>
         /// Composite collection that stores both header and message
         /// </summary>
-        public IList PacketContents
+        public IList PacketContent
         {
             get
             {
@@ -118,7 +121,7 @@ namespace NetworkSniffer.Model
         {
             get
             {
-                return DateTime.Now.ToString("HH:mm:ss:fff");
+                return DateTime.Now.ToString("HH:mm:ss");
             }
         }
         #endregion
@@ -135,11 +138,11 @@ namespace NetworkSniffer.Model
 
             if(IPHeader[0].TransportProtocol == 6)
             {
-                TCPPacket.Add(new TCPPacket());
+                TCPPacket.Add(new TCPPacket(byteIPMessage, byteIPMessage.Length));
             }
             else if (IPHeader[0].TransportProtocol == 17)
             {
-                UDPPacket.Add(new UDPPacket());
+                UDPPacket.Add(new UDPPacket(byteIPMessage, byteIPMessage.Length));
             }
         }
         #endregion
