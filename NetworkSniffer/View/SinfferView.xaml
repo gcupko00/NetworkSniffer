@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:NetworkSniffer.View"
+             xmlns:model="clr-namespace:NetworkSniffer.Model"
              xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="500"
@@ -11,6 +12,7 @@
              MinWidth="600"
              HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
              DataContext="{Binding Main, Source={StaticResource Locator}}">
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"></RowDefinition>
@@ -38,7 +40,8 @@
                     Command="{Binding OpenAnalyzer}"></Button>
         </DockPanel>
         <ListView Grid.Row="1" Grid.ColumnSpan="2" Height="Auto"
-                  ItemsSource="{Binding Path=PacketList, Mode=TwoWay}">
+                  ItemsSource="{Binding Path=PacketList, Mode=TwoWay}"
+                  SelectedItem="{Binding SelectedPacket, Mode=TwoWay}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="No." Width="Auto"></GridViewColumn> <!-- Kupim ti Pringles ako ovo riješiš čisto u XAML-u -->
@@ -50,6 +53,14 @@
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn Header="Source Port" Width="100">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <DockPanel>
+                                    <TextBlock Text="{Binding Path=UDPPacket[0].UDPHeader[0].SourcePort}"></TextBlock>
+                                    <TextBlock Text="{Binding Path=TCPPacket[0].TCPHeader[0].SourcePort}"></TextBlock>
+                                </DockPanel>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn Header="Destination IP" Width="130">
                         <GridViewColumn.CellTemplate>
@@ -58,7 +69,16 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="Destination Port" Width="100"></GridViewColumn>
+                    <GridViewColumn Header="Destination Port" Width="100">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <DockPanel>
+                                    <TextBlock Text="{Binding Path=UDPPacket[0].UDPHeader[0].DestinationPort}"></TextBlock>
+                                    <TextBlock Text="{Binding Path=TCPPacket[0].TCPHeader[0].DestinationPort}"></TextBlock>
+                                </DockPanel>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                     <GridViewColumn Header="Time" Width="100">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
@@ -83,8 +103,73 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <TreeView Grid.Row="2">
-            
+        <TreeView Grid.Row="2" Grid.Column="0"
+                  ItemsSource ="{Binding SelectedPacketTree}">
+            <TreeView.Resources>
+                <HierarchicalDataTemplate DataType="{x:Type model:IPPacket}" ItemsSource="{Binding Path=PacketContent}">
+                    <TextBlock Text="IP Packet"></TextBlock>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type model:TCPPacket}" ItemsSource="{Binding Path=PacketContent}">
+                    <TextBlock Text="TCP Packet"></TextBlock>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type model:UDPPacket}" ItemsSource="{Binding Path=PacketContent}">
+                    <TextBlock Text="UDP Packet"></TextBlock>
+                </HierarchicalDataTemplate>
+                <DataTemplate DataType="{x:Type model:IPHeader}">
+                    <StackPanel>
+                        <DockPanel>
+                            <TextBlock Text="   Version: "></TextBlock>
+                            <TextBlock Text="{Binding Version}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="   IHL: "></TextBlock>
+                            <TextBlock Text="{Binding InternetHeaderLength}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="   TOS: "></TextBlock>
+                            <TextBlock Text="{Binding TypeOfService}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="   Total length: "></TextBlock>
+                            <TextBlock Text="{Binding TotalLength}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="   Flags: "></TextBlock>
+                            <TextBlock Text="{Binding FlagsMeaning}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="   Fragment Offset: "></TextBlock>
+                            <TextBlock Text="{Binding FragmentOffset}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="   TTL: "></TextBlock>
+                            <TextBlock Text="{Binding TimeToLive}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="   Transport protocol: "></TextBlock>
+                            <TextBlock Text="{Binding TransportProtocolName}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="   Header checksum:"></TextBlock>
+                            <TextBlock Text="{Binding HeaderChecksum}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="   Source: "></TextBlock>
+                            <TextBlock Text="{Binding SourceIPAddress}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="   Destination: "></TextBlock>
+                            <TextBlock Text="{Binding DestinationIpAddress}"></TextBlock>
+                        </DockPanel>
+                    </StackPanel>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type model:TCPHeader}">
+                    <TextBlock Text="TCP Header"></TextBlock>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type model:UDPHeader}">
+                    <TextBlock Text="UDP Header"></TextBlock>
+                </DataTemplate>
+            </TreeView.Resources>
         </TreeView>
         <DockPanel Grid.Row="2" Grid.Column="1">
             <Grid>
