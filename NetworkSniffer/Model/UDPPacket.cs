@@ -13,9 +13,9 @@ namespace NetworkSniffer.Model
     public class UDPPacket
     {
         #region Members
-        private byte[] byteUDPHeader;
-        private byte[] byteUDPMessage;
         private const uint UDPHeaderSize = 8;
+        private byte[] byteUDPHeader = new byte[UDPHeaderSize];
+        private byte[] byteUDPMessage;
         #endregion
 
         #region Constructors
