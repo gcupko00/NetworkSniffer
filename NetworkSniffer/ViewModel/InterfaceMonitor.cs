@@ -11,14 +11,16 @@ namespace NetworkSniffer.Model
     class InterfaceMonitor
     {
         #region Members
+        private const uint MTU = 1024 * 64;
+        private byte[] byteBufferData;
         private Socket socket;
         private IPAddress ipAddress;
-        private byte[] byteBufferData = new byte[1024*16]; //testing. triba stavit max packet size
         #endregion
 
         #region Constructors
         public InterfaceMonitor(string ip)
         {
+            byteBufferData = new byte[MTU];
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Raw, ProtocolType.IP);
             ipAddress = IPAddress.Parse(ip);
         }
@@ -39,6 +41,7 @@ namespace NetworkSniffer.Model
              * Second option should be TRUE */
             socket.IOControl(IOControlCode.ReceiveAll, byteTrue, byteOut);
 
+            byteBufferData = new byte[MTU];
             socket.BeginReceive(byteBufferData, 0, byteBufferData.Length,
                                 SocketFlags.None, new AsyncCallback(this.ReceiveData), null);
         }

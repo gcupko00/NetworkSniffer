@@ -79,6 +79,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Model\DNSHeader.cs" />
+    <Compile Include="Model\DNSPacket.cs" />
     <Compile Include="Model\TCPHeader.cs" />
     <Compile Include="Model\UDPHeader.cs" />
     <Compile Include="ViewModel\InterfaceMonitor.cs" />
