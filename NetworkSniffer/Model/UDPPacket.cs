@@ -10,6 +10,9 @@ using System.Windows;
 
 namespace NetworkSniffer.Model
 {
+    /// <summary>
+    /// This class is used to handle UDP packet parsing 
+    /// </summary>
     public class UDPPacket
     {
         #region Members
@@ -19,12 +22,16 @@ namespace NetworkSniffer.Model
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Initializes new UDPPacket class instance
+        /// </summary>
+        /// <param name="byteBuffer">UDP packet data byte array</param>
+        /// <param name="length">UDP packet size</param>
         public UDPPacket(byte[] byteBuffer, int length)
         {
             try
             {
                 // Create MemoryStream out of received byte array
-                // *check if it is possible to use MemoryStream(byteBuffer)
                 MemoryStream memoryStream = new MemoryStream(byteBuffer, 0, length);
 
                 // Create BinaryReader out of MemoryStream
@@ -66,7 +73,6 @@ namespace NetworkSniffer.Model
         #region Methods
         private void PopulatePacketContents()
         {
-            // add header info
             UDPHeader.Add(new UDPHeader(byteUDPHeader, (int)UDPHeaderSize));
         }
         #endregion
