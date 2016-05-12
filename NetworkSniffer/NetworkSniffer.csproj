@@ -83,6 +83,7 @@
     <Compile Include="Model\DNSPacket.cs" />
     <Compile Include="Model\TCPHeader.cs" />
     <Compile Include="Model\UDPHeader.cs" />
+    <Compile Include="ViewModel\HelpViewModel.cs" />
     <Compile Include="ViewModel\InterfaceMonitor.cs" />
     <Compile Include="Model\IPHeader.cs" />
     <Compile Include="Model\IPPacket.cs" />
@@ -94,10 +95,17 @@
     <Compile Include="View\AnalyzerView.xaml.cs">
       <DependentUpon>AnalyzerView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\HelpView.xaml.cs">
+      <DependentUpon>HelpView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\SinfferView.xaml.cs">
       <DependentUpon>SinfferView.xaml</DependentUpon>
     </Compile>
     <Page Include="View\AnalyzerView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\HelpView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -147,6 +155,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <None Include="Resources\Help.rtf" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

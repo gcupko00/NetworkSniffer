@@ -19,6 +19,8 @@
         <DataTemplate DataType="{x:Type vm:AnalyzerViewModel}">
             <views:AnalyzerView />
         </DataTemplate>
-
+        <DataTemplate DataType="{x:Type vm:HelpViewModel}">
+            <views:HelpView />
+        </DataTemplate>
     </Application.Resources>
 </Application>
