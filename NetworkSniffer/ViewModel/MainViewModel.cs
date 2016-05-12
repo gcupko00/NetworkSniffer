@@ -23,6 +23,7 @@ namespace NetworkSniffer.ViewModel
         private AnalyzerViewModel analyzerViewModel = new AnalyzerViewModel();
 
         private InterfaceMonitor monitor;
+        private string filter;
         private readonly object packetListLock = new object();
         #endregion
 
@@ -32,6 +33,7 @@ namespace NetworkSniffer.ViewModel
         /// </summary>
         public MainViewModel()
         {
+            filter = "";
             CurrentViewModel = snifferViewModel;
             OpenAnalyzer = new RelayCommand(() => OpenAnalyzerExecute());
             OpenSniffer = new RelayCommand(() => OpenSnifferExecute());
@@ -39,9 +41,11 @@ namespace NetworkSniffer.ViewModel
             StopCapture = new RelayCommand(() => StopCaputureExecute());
             ClearPacketList = new RelayCommand(() => ClearPacketListExecute());
             ResetFilter = new RelayCommand(() => ResetFilterExecute());
+            ApplyFilter = new RelayCommand(() => ApplyFilterExecute());
 
             DeviceAddressList = new ObservableCollection<string>();
             PacketList = new ObservableCollection<IPPacket>();
+            FilteredPacketList = new ObservableCollection<IPPacket>();
             SelectedPacketTree = new ObservableCollection<IPPacket>();
             GetAddresses();
         }
@@ -62,6 +66,7 @@ namespace NetworkSniffer.ViewModel
             }
         }
 
+        // List for storing all captured packets
         private ObservableCollection<IPPacket> packetList;
         public ObservableCollection<IPPacket> PacketList
         {
@@ -74,6 +79,22 @@ namespace NetworkSniffer.ViewModel
                 packetList = value;
                 // Enables access to packetList from different threads
                 BindingOperations.EnableCollectionSynchronization(packetList, packetListLock);
+            }
+        }
+
+        // List of filtered packets from PacketList that will be displayed on ViewList
+        private ObservableCollection<IPPacket> filteredPacketList;
+        public ObservableCollection<IPPacket> FilteredPacketList
+        {
+            get
+            {
+                return filteredPacketList;
+            }
+            set
+            {
+                filteredPacketList = value;
+                // Enables access to packetList from different threads
+                BindingOperations.EnableCollectionSynchronization(filteredPacketList, packetListLock);
             }
         }
 
@@ -177,17 +198,17 @@ namespace NetworkSniffer.ViewModel
             }
         }
 
-        private string filter;
-        public string Filter
+        private string filterBox;
+        public string FilterBox
         {
             get
             {
-                return filter;
+                return filterBox;
             }
             set
             {
-                filter = value;
-                RaisePropertyChanged("Filter");
+                filterBox = value;
+                RaisePropertyChanged("FilterBox");
             }
         }
         #endregion
@@ -209,11 +230,36 @@ namespace NetworkSniffer.ViewModel
 
         private void ReceiveNewPacket(IPPacket newPacket)
         {
+            newPacket.PacketID = (uint)PacketList.Count + 1;
+
             PacketList.Add(newPacket);
-            newPacket.PacketID = (uint)PacketList.Count;
+            AddToFilteredList(newPacket);
             //testing
             //IPAddress test = new IPAddress(newPacket.IPHeader[0].SourceIPAddress);
             //MessageBox.Show(newPacket.PacketID.ToString());
+        }
+
+        private void AddToFilteredList(IPPacket newPacket)
+        {
+            if (filter == "")
+            {
+                FilteredPacketList.Add(newPacket);
+                return;
+            }
+            if (filter.Contains("udp") || filter.Contains("UDP"))
+                if (newPacket.UDPPacket.Count > 0)
+                    if (newPacket.UDPPacket[0].UDPHeader[0].DestinationPort == 53)
+                        FilteredPacketList.Add(newPacket);
+        }
+
+        private void FilterAllPackets()
+        {
+            FilteredPacketList.Clear();
+
+            foreach (IPPacket packet in PacketList)
+            {
+                AddToFilteredList(packet);
+            }
         }
         #endregion
 
@@ -250,9 +296,6 @@ namespace NetworkSniffer.ViewModel
                     monitor = new InterfaceMonitor(SelectedAddress);
                     monitor.newPacketEventHandler += new InterfaceMonitor.NewPacketEventHandler(ReceiveNewPacket);
                     monitor.StartCapture();
-
-                    //testing
-                    //MessageBox.Show("created monitor" + monitor.ToString());
                 }
             }
         }
@@ -276,13 +319,25 @@ namespace NetworkSniffer.ViewModel
         private void ClearPacketListExecute()
         {
             PacketList.Clear();
+            FilteredPacketList.Clear();
+            filter = FilterBox;
         }
 
         public ICommand ResetFilter { get; private set; }
 
         private void ResetFilterExecute()
         {
-            Filter = "";
+            FilterBox = "";
+            filter = "";
+            FilterAllPackets();
+        }
+
+        public ICommand ApplyFilter { get; private set; }
+
+        private void ApplyFilterExecute()
+        {
+            filter = FilterBox;
+            FilterAllPackets();
         }
         #endregion
     }
