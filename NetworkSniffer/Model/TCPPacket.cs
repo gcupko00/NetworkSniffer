@@ -37,6 +37,7 @@ namespace NetworkSniffer.Model
                 Array.Copy(byteBuffer, TCPHeaderSize, byteTCPMessage, 0, length - TCPHeaderSize);
 
                 TCPHeader = new List<TCPHeader>();
+                DNSPacket = new List<DNSPacket>();
 
                 PopulatePacketContents();
             }
@@ -46,17 +47,28 @@ namespace NetworkSniffer.Model
             }
         }
 
-
         #region Properties
+        /// <summary>
+        /// Holds only one element - header part of the TCPPacket
+        /// </summary>
         public List<TCPHeader> TCPHeader { get; set; }
 
+        /// <summary>
+        /// Holds TCP message if application protocol is DNS
+        /// </summary>
+        public List<DNSPacket> DNSPacket { get; set; }
+
+        /// <summary>
+        /// Composite collection that stores both header and message
+        /// </summary>
         public IList PacketContent
         {
             get
             {
                 return new CompositeCollection()
                 {
-                    new CollectionContainer() { Collection = TCPHeader }
+                    new CollectionContainer() { Collection = TCPHeader },
+                    new CollectionContainer() { Collection = DNSPacket }
                 };
             }
         }
@@ -65,8 +77,17 @@ namespace NetworkSniffer.Model
         #region Methods
         private void PopulatePacketContents()
         {
-            // add header info
+            // Add header info
             TCPHeader.Add(new TCPHeader(byteTCPHeader, (int)TCPHeaderSize));
+            
+            if (TCPHeader[0].DestinationPort == 53)
+            {
+                DNSPacket.Add(new DNSPacket(byteTCPMessage, byteTCPMessage.Length));
+            }
+            else if (TCPHeader[0].SourcePort == 53)
+            {
+                DNSPacket.Add(new DNSPacket(byteTCPMessage, byteTCPMessage.Length));
+            }
         }
         #endregion
     }

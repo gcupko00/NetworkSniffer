@@ -38,6 +38,7 @@ namespace NetworkSniffer.Model
                 Array.Copy(byteBuffer, UDPHeaderSize, byteUDPMessage, 0, length - UDPHeaderSize);
 
                 UDPHeader = new List<UDPHeader>();
+                DNSPacket = new List<DNSPacket>();
 
                 PopulatePacketContents();
             }
@@ -49,7 +50,19 @@ namespace NetworkSniffer.Model
         #endregion
 
         #region Properties
+        /// <summary>
+        /// Holds only one element - header part of the UDPPacket
+        /// </summary>
         public List<UDPHeader> UDPHeader { get; set; }
+
+        /// <summary>
+        /// Holds UDP message if application protocol is DNS
+        /// </summary>
+        public List<DNSPacket> DNSPacket { get; set; }
+
+        /// <summary>
+        /// Composite collection that stores both header and message
+        /// </summary>
 
         public IList PacketContent
         {
@@ -57,7 +70,8 @@ namespace NetworkSniffer.Model
             {
                 return new CompositeCollection()
                 {
-                    new CollectionContainer() { Collection = UDPHeader }
+                    new CollectionContainer() { Collection = UDPHeader },
+                    new CollectionContainer() { Collection = DNSPacket }
                 };
             }
         }
@@ -66,8 +80,17 @@ namespace NetworkSniffer.Model
         #region Methods
         private void PopulatePacketContents()
         {
-            // add header info
+            // Add header info
             UDPHeader.Add(new UDPHeader(byteUDPHeader, (int)UDPHeaderSize));
+
+            if (UDPHeader[0].DestinationPort == 53)
+            {
+                DNSPacket.Add(new DNSPacket(byteUDPMessage, byteUDPMessage.Length));
+            }
+            else if (UDPHeader[0].SourcePort == 53)
+            {
+                DNSPacket.Add(new DNSPacket(byteUDPMessage, byteUDPMessage.Length));
+            }
         }
         #endregion
     }
