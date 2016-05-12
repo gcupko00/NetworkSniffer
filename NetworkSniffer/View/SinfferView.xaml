@@ -28,9 +28,11 @@
                     Command="{Binding StartCapture}"></Button>
             <Button Content="Stop"  HorizontalAlignment="Left" VerticalAlignment="Center" Height="25" Padding="10 0" Margin="0 0 5 0"
                     Command="{Binding StopCapture}"></Button>
-            <TextBox VerticalAlignment="Center" Height="25" Width="100" Padding="3"></TextBox>
+            <TextBox VerticalAlignment="Center" Height="25" Width="100" Padding="3"
+                     Text="{Binding Filter}"></TextBox>
             <Button Content="Filter" VerticalAlignment="Center" Height="25" Padding="10 0" Margin="5 0"></Button>
-            <Button Content="Reset" VerticalAlignment="Center" Height="25" Padding="10 0" Margin="0 0 5 0"></Button>
+            <Button Content="Reset" VerticalAlignment="Center" Height="25" Padding="10 0" Margin="0 0 5 0"
+                    Command="{Binding ResetFilter}"></Button>
             <Button Content="Clear" VerticalAlignment="Center" Height="25" Padding="10 0"
                     Command="{Binding ClearPacketList}"></Button>
             <Button Content="Analyzer" HorizontalAlignment="Right" VerticalAlignment="Center" Height="25" Width="70" Padding="10 0" Margin="5 0"
@@ -41,7 +43,13 @@
                   SelectedItem="{Binding SelectedPacket, Mode=TwoWay}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="No." Width="Auto"></GridViewColumn> <!-- Kupim ti Pringles ako ovo riješiš čisto u XAML-u -->
+                    <GridViewColumn Header="No." Width="60">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=PacketID}"></TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                     <GridViewColumn Header="Source IP" Width="130">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
@@ -112,6 +120,9 @@
                 </HierarchicalDataTemplate>
                 <HierarchicalDataTemplate DataType="{x:Type model:UDPPacket}" ItemsSource="{Binding Path=PacketContent}">
                     <TextBlock Text="UDP Packet"></TextBlock>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type model:DNSPacket}" ItemsSource="{Binding Path=PacketContent}">
+                    <TextBlock Text="DNS Packet"></TextBlock>
                 </HierarchicalDataTemplate>
                 <DataTemplate DataType="{x:Type model:IPHeader}">
                     <StackPanel>
@@ -218,6 +229,34 @@
                         <DockPanel>
                             <TextBlock Text="   Checksum: "></TextBlock>
                             <TextBlock Text="{Binding Checksum}"></TextBlock>
+                        </DockPanel>
+                    </StackPanel>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type model:DNSHeader}">
+                    <StackPanel>
+                        <DockPanel>
+                            <TextBlock Text="   Identification: "></TextBlock>
+                            <TextBlock Text="{Binding Identification}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="   Flags: "></TextBlock>
+                            <TextBlock Text="{Binding Flags}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="   Questions: "></TextBlock>
+                            <TextBlock Text="{Binding Questions}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="   Answer: "></TextBlock>
+                            <TextBlock Text="{Binding Answer}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="   AuthorityRR: "></TextBlock>
+                            <TextBlock Text="{Binding AuthorityRR}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="   AdditionalRR: "></TextBlock>
+                            <TextBlock Text="{Binding AdditionalRR}"></TextBlock>
                         </DockPanel>
                     </StackPanel>
                 </DataTemplate>

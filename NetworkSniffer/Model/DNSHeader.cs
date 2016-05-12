@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NetworkSniffer.Model
 {
@@ -43,7 +38,7 @@ namespace NetworkSniffer.Model
 
         public ushort AuthorityRR { get; private set; }
 
-        public ushort AdditionalRR{ get; private set; }
+        public ushort AdditionalRR { get; private set; }
         #endregion
     }
 }

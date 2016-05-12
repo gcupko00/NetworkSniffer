@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using System.Net;
 using System.Collections;
-using System.Windows.Data;
+using System.Collections.Generic;
+using System.IO;
 using System.Windows;
+using System.Windows.Data;
 
 namespace NetworkSniffer.Model
 {
@@ -19,6 +15,7 @@ namespace NetworkSniffer.Model
         #region Members
         private byte[] byteIPHeader;
         private byte[] byteIPMessage;
+        private uint packetID;
         #endregion
 
         #region Constructors
@@ -96,6 +93,18 @@ namespace NetworkSniffer.Model
             get
             {
                 return byteIPMessage;
+            }
+        }
+
+        public uint PacketID
+        {
+            get
+            {
+                return packetID;
+            }
+            set
+            {
+                packetID = value;
             }
         }
 
