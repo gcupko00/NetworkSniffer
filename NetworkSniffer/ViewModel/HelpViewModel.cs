@@ -15,11 +15,19 @@ namespace NetworkSniffer.ViewModel
     {
         public HelpViewModel()
         {
-            FlowDocument helpDocument = Application.LoadComponent(new Uri("/Resources/Help.rtf", UriKind.RelativeOrAbsolute)) as FlowDocument;
+            try
+            {
+                MemoryStream memoryResStream = new MemoryStream(Encoding.Default.GetBytes(HelpResource.Help));
 
-            HelpTextBox = new RichTextBox();
-
-            HelpTextBox.Document = helpDocument;
+                HelpTextBox = new RichTextBox();
+                HelpTextBox.Padding = new Thickness(5);
+                HelpTextBox.SelectAll();
+                HelpTextBox.Selection.Load(memoryResStream, DataFormats.Rtf);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Document loading error");
+            }
         }
         
         public RichTextBox HelpTextBox { get; private set; }

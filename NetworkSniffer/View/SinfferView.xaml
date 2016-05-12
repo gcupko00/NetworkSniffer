@@ -36,8 +36,12 @@
                     Command="{Binding ResetFilter}"></Button>
             <Button Content="Clear" VerticalAlignment="Center" Height="25" Padding="10 0"
                     Command="{Binding ClearPacketList}"></Button>
-            <Button Content="Analyzer" HorizontalAlignment="Right" VerticalAlignment="Center" Height="25" Width="70" Padding="10 0" Margin="5 0"
+            <DockPanel HorizontalAlignment="Right">
+                <Button Content="Help" VerticalAlignment="Center" Height="25" Width="70" Padding="10 0" Margin="5 0"
+                    Command="{Binding OpenHelp}"></Button>
+                <Button Content="Analyzer" VerticalAlignment="Center" Height="25" Width="70" Padding="10 0" Margin="5 0"
                     Command="{Binding OpenAnalyzer}"></Button>
+            </DockPanel>            
         </DockPanel>
         <ListView Grid.Row="1" Grid.ColumnSpan="2" Height="Auto"
                   ItemsSource="{Binding Path=FilteredPacketList, Mode=TwoWay}"

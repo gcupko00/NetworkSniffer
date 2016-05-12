@@ -21,6 +21,7 @@ namespace NetworkSniffer.ViewModel
         #region Members
         private SnifferViewModel snifferViewModel = new SnifferViewModel();
         private AnalyzerViewModel analyzerViewModel = new AnalyzerViewModel();
+        private HelpViewModel helpViewModel = new HelpViewModel();
 
         private InterfaceMonitor monitor;
         private string filter;
@@ -37,6 +38,7 @@ namespace NetworkSniffer.ViewModel
             CurrentViewModel = snifferViewModel;
             OpenAnalyzer = new RelayCommand(() => OpenAnalyzerExecute());
             OpenSniffer = new RelayCommand(() => OpenSnifferExecute());
+            OpenHelp = new RelayCommand(() => OpenHelpExecute());
             StartCapture = new RelayCommand(() => StartCaptureExecute());
             StopCapture = new RelayCommand(() => StopCaputureExecute());
             ClearPacketList = new RelayCommand(() => ClearPacketListExecute());
@@ -241,7 +243,7 @@ namespace NetworkSniffer.ViewModel
 
         private void AddToFilteredList(IPPacket newPacket)
         {
-            if (filter == "")
+            if (String.IsNullOrEmpty(filter))
             {
                 FilteredPacketList.Add(newPacket);
                 return;
@@ -277,7 +279,14 @@ namespace NetworkSniffer.ViewModel
         {
             CurrentViewModel = snifferViewModel;
         }
-        
+
+        public ICommand OpenHelp { get; private set; }
+
+        private void OpenHelpExecute()
+        {
+            CurrentViewModel = helpViewModel;
+        }
+
         public ICommand StartCapture { get; private set; }
 
         private void StartCaptureExecute()
