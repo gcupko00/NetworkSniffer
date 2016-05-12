@@ -38,6 +38,7 @@ namespace NetworkSniffer.ViewModel
             StartCapture = new RelayCommand(() => StartCaptureExecute());
             StopCapture = new RelayCommand(() => StopCaputureExecute());
             ClearPacketList = new RelayCommand(() => ClearPacketListExecute());
+            ResetFilter = new RelayCommand(() => ResetFilterExecute());
 
             DeviceAddressList = new ObservableCollection<string>();
             PacketList = new ObservableCollection<IPPacket>();
@@ -209,9 +210,10 @@ namespace NetworkSniffer.ViewModel
         private void ReceiveNewPacket(IPPacket newPacket)
         {
             PacketList.Add(newPacket);
+            newPacket.PacketID = (uint)PacketList.Count;
             //testing
             //IPAddress test = new IPAddress(newPacket.IPHeader[0].SourceIPAddress);
-            //MessageBox.Show(test.ToString());
+            //MessageBox.Show(newPacket.PacketID.ToString());
         }
         #endregion
 
@@ -274,6 +276,13 @@ namespace NetworkSniffer.ViewModel
         private void ClearPacketListExecute()
         {
             PacketList.Clear();
+        }
+
+        public ICommand ResetFilter { get; private set; }
+
+        private void ResetFilterExecute()
+        {
+            Filter = "";
         }
         #endregion
     }
