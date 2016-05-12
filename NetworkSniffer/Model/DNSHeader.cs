@@ -14,7 +14,7 @@ namespace NetworkSniffer.Model
 
             Identification = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
 
-            Flags = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
+            ushortFlags = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
 
             Questions = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
 
@@ -30,7 +30,62 @@ namespace NetworkSniffer.Model
         #region Properties
         public ushort Identification { get; private set; }
 
-        public ushort Flags { get; private set; } //Trebat stringirat i parsirat
+        public ushort ushortFlags { get; private set; } //Trebat stringirat i parsirat
+
+        // Flags does not provide info about Opcode and Rcode
+        private string flags;
+        public string Flags
+        {
+            get
+            {
+                string value = "(";
+
+                if ((ushortFlags & 0x10) != 0)
+                {
+                    value += "CD, ";
+                }
+                if ((ushortFlags & 0x20) != 0)
+                {
+                    value += "AD, ";
+                }
+                if ((ushortFlags & 0x40) != 0)
+                {
+                    value += "Z, ";
+                }
+                if ((ushortFlags & 0x80) != 0)
+                {
+                    value += "RA, ";
+                }
+                if ((ushortFlags & 0x100) != 0)
+                {
+                    value += "RD, ";
+                }
+                if ((ushortFlags & 0x200) != 0)
+                {
+                    value += "TC, ";
+                }
+                if ((ushortFlags & 0x400) != 0)
+                {
+                    value += "AA, ";
+                }
+                if ((ushortFlags & 0x8000) != 0)
+                {
+                    value += "QR";
+                }
+                value += ")";
+
+                if (value == "()")
+                {
+                    value = "";
+                }
+                else if (value.Contains(", )"))
+                {
+                    value = value.Remove(value.Length - 3, 2);
+                }
+
+                return value;
+            }
+        }
 
         public ushort Questions { get; private set; }
 

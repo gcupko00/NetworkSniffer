@@ -93,7 +93,6 @@ namespace NetworkSniffer.Model
 
                 return value;
             }
-
         }
 
         public ushort WindowSize { get; set; }
