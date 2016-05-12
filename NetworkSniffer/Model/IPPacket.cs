@@ -71,6 +71,8 @@ namespace NetworkSniffer.Model
 
                 // Add header info and packet message to PacketContents collection
                 PopulatePacketContents(byteHeaderLength);
+
+                ReceiveTime = DateTime.Now.ToString("HH:mm:ss");
             }
             catch (Exception e)
             {
@@ -142,13 +144,7 @@ namespace NetworkSniffer.Model
             }
         }
 
-        public string ReceiveTime
-        {
-            get
-            {
-                return DateTime.Now.ToString("HH:mm:ss");
-            }
-        }
+        public string ReceiveTime { get; private set; }
         #endregion
 
         #region Methods

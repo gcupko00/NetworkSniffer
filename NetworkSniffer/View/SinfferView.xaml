@@ -268,11 +268,11 @@
                     <ColumnDefinition></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <ScrollViewer Grid.Column="0">
+                <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Hidden">
                     <TextBox IsReadOnly="True" TextWrapping="Wrap" TextAlignment="Justify" Padding="5"
                              Text="{Binding HexPacketData, Mode=OneWay}"></TextBox>
                 </ScrollViewer>
-                <ScrollViewer Grid.Column="1">
+                <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Hidden">
                     <TextBox IsReadOnly="True" TextWrapping="Wrap" TextAlignment="Justify" Padding="5"
                              Text="{Binding CharPacketData, Mode=OneWay}"></TextBox>
                 </ScrollViewer>
