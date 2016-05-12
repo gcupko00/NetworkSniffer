@@ -83,6 +83,22 @@ namespace NetworkSniffer.Model
         #endregion
 
         #region Properties
+        public byte[] ByteIPHeader
+        {
+            get
+            {
+                return byteIPHeader;
+            }
+        }
+
+        public byte[] ByteIPMessage
+        {
+            get
+            {
+                return byteIPMessage;
+            }
+        }
+
         // Adding header to composite collection seems like best idea for displaying packet info
         // Both header and massage must be stored as a list so they could be put in CompositeCollection
 

@@ -6,10 +6,7 @@
              xmlns:local="clr-namespace:NetworkSniffer.View"
              xmlns:model="clr-namespace:NetworkSniffer.Model"
              xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
-             mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="500"
-             MinHeight="400"
-             MinWidth="600"
+             MinHeight="400" MinWidth="600"
              HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
              DataContext="{Binding Main, Source={StaticResource Locator}}">
     
@@ -104,6 +101,7 @@
             </ListView.View>
         </ListView>
         <TreeView Grid.Row="2" Grid.Column="0"
+                  Padding="5"
                   ItemsSource ="{Binding SelectedPacketTree}">
             <TreeView.Resources>
                 <HierarchicalDataTemplate DataType="{x:Type model:IPPacket}" ItemsSource="{Binding Path=PacketContent}">
@@ -150,7 +148,7 @@
                             <TextBlock Text="{Binding TransportProtocolName}"></TextBlock>
                         </DockPanel>
                         <DockPanel>
-                            <TextBlock Text="   Header checksum:"></TextBlock>
+                            <TextBlock Text="   Header checksum: "></TextBlock>
                             <TextBlock Text="{Binding HeaderChecksum}"></TextBlock>
                         </DockPanel>
                         <DockPanel>
@@ -231,8 +229,14 @@
                     <ColumnDefinition></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <RichTextBox Grid.Column="0" IsReadOnly="True"></RichTextBox>
-                <RichTextBox Grid.Column="1" IsReadOnly="True"></RichTextBox>
+                <ScrollViewer Grid.Column="0">
+                    <TextBox IsReadOnly="True" TextWrapping="Wrap" TextAlignment="Justify" Padding="5"
+                             Text="{Binding HexPacketData, Mode=OneWay}"></TextBox>
+                </ScrollViewer>
+                <ScrollViewer Grid.Column="1">
+                    <TextBox IsReadOnly="True" TextWrapping="Wrap" TextAlignment="Justify" Padding="5"
+                             Text="{Binding CharPacketData, Mode=OneWay}"></TextBox>
+                </ScrollViewer>
             </Grid>            
         </DockPanel>
     </Grid>

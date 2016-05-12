@@ -8,6 +8,8 @@ using System.Net.Sockets;
 using System;
 using System.Windows;
 using System.Windows.Data;
+using System.Text;
+using System.Windows.Documents;
 
 namespace NetworkSniffer.ViewModel
 {
@@ -89,6 +91,8 @@ namespace NetworkSniffer.ViewModel
                 SelectedPacketTree.Clear();
                 SelectedPacketTree.Add(selectedPacket);
                 RaisePropertyChanged("SelectedPacket");
+                RaisePropertyChanged("HexPacketData");
+                RaisePropertyChanged("CharPacketData");
             }
         }
 
@@ -109,6 +113,66 @@ namespace NetworkSniffer.ViewModel
             {
                 selectedAddress = value;
                 RaisePropertyChanged("SelectedAddress");
+            }
+        }
+
+        public string HexPacketData
+        {
+            get
+            {
+                try
+                {
+                    int length = SelectedPacket.IPHeader[0].TotalLength;
+
+                    StringBuilder stringBuilder = new StringBuilder(length * 2);
+
+                    // Copy header and message from selected IP packet to packetData
+                    byte[] packetData = new byte[length];
+                    Array.Copy(SelectedPacket.ByteIPHeader, packetData, SelectedPacket.ByteIPHeader.Length);
+                    Array.Copy(SelectedPacket.ByteIPMessage, 0, packetData, SelectedPacket.ByteIPHeader.Length, SelectedPacket.ByteIPMessage.Length);
+
+                    for (int i = 0; i < length; i++)
+                    {
+                        stringBuilder.Append(packetData[i].ToString("x2") + " ");
+                    }
+
+                    return stringBuilder.ToString();
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+        }
+
+        public string CharPacketData
+        {
+            get
+            {
+                try {
+                    int length = SelectedPacket.IPHeader[0].TotalLength;
+
+                    StringBuilder stringBuilder = new StringBuilder();
+
+                    // Copy header and message from selected IP packet to packetData
+                    byte[] packetData = new byte[length];
+                    Array.Copy(SelectedPacket.ByteIPHeader, packetData, SelectedPacket.ByteIPHeader.Length);
+                    Array.Copy(SelectedPacket.ByteIPMessage, 0, packetData, SelectedPacket.ByteIPHeader.Length, SelectedPacket.ByteIPMessage.Length);
+
+                    for (int i = 0; i < length; i++)
+                    {
+                        if (packetData[i] > 31 && packetData[i] < 128)
+                            stringBuilder.Append((char)packetData[i]);
+                        else
+                            stringBuilder.Append(".");
+                    }
+
+                    return stringBuilder.ToString();
+                }
+                catch
+                {
+                    return null;
+                }
             }
         }
 
