@@ -24,9 +24,9 @@ namespace NetworkSniffer.ViewModel
                 HelpTextBox.SelectAll();
                 HelpTextBox.Selection.Load(memoryResStream, DataFormats.Rtf);
             }
-            catch (Exception e)
+            catch
             {
-                MessageBox.Show(e.Message, "Document loading error");
+                return;
             }
         }
         

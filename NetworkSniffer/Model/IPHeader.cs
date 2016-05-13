@@ -99,8 +99,7 @@ namespace NetworkSniffer.Model
         public ushort Identification { get; set; }
         
         public byte Flags { get; set; }
-
-        private string flagsMeaning;
+        
         public string FlagsMeaning
         {
             get
@@ -124,8 +123,7 @@ namespace NetworkSniffer.Model
         public byte TimeToLive { get; set; }
 
         public byte TransportProtocol { get; set; }
-
-        private string transportProtocolName;
+        
         public string TransportProtocolName
         {
             get

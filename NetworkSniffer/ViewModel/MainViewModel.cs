@@ -236,6 +236,7 @@ namespace NetworkSniffer.ViewModel
 
             PacketList.Add(newPacket);
             AddToFilteredList(newPacket);
+            StatsHandler.UpdateStats(newPacket);
             //testing
             //IPAddress test = new IPAddress(newPacket.IPHeader[0].SourceIPAddress);
             //MessageBox.Show(newPacket.PacketID.ToString());

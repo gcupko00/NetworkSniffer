@@ -86,8 +86,10 @@
     </Compile>
     <Compile Include="Model\DNSHeader.cs" />
     <Compile Include="Model\DNSPacket.cs" />
+    <Compile Include="Model\PacketLengthCategory.cs" />
     <Compile Include="Model\TCPHeader.cs" />
     <Compile Include="Model\UDPHeader.cs" />
+    <Compile Include="Model\TransportProtocolCategory.cs" />
     <Compile Include="ViewModel\HelpViewModel.cs" />
     <Compile Include="ViewModel\InterfaceMonitor.cs" />
     <Compile Include="Model\IPHeader.cs" />
@@ -96,6 +98,7 @@
     <Compile Include="Model\UDPPacket.cs" />
     <Compile Include="ViewModel\AnalyzerViewModel.cs" />
     <Compile Include="ViewModel\SnifferViewModel.cs" />
+    <Compile Include="ViewModel\StatsHandler.cs" />
     <Compile Include="ViewModel\UserIdentityHandler.cs" />
     <Compile Include="View\AnalyzerView.xaml.cs">
       <DependentUpon>AnalyzerView.xaml</DependentUpon>

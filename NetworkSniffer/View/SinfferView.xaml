@@ -39,7 +39,7 @@
             <DockPanel HorizontalAlignment="Right">
                 <Button Content="Help" VerticalAlignment="Center" Height="25" Width="70" Padding="10 0" Margin="5 0"
                     Command="{Binding OpenHelp}"></Button>
-                <Button Content="Analyzer" VerticalAlignment="Center" Height="25" Width="70" Padding="10 0" Margin="5 0"
+                <Button Content="Statistics" VerticalAlignment="Center" Height="25" Width="70" Padding="10 0" Margin="5 0"
                     Command="{Binding OpenAnalyzer}"></Button>
             </DockPanel>            
         </DockPanel>
