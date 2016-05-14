@@ -30,10 +30,9 @@ namespace NetworkSniffer.Model
         #region Properties
         public ushort Identification { get; private set; }
 
-        public ushort ushortFlags { get; private set; } //Trebat stringirat i parsirat
+        public ushort ushortFlags { get; private set; }
 
         // Flags does not provide info about Opcode and Rcode
-        private string flags;
         public string Flags
         {
             get

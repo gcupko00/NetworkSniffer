@@ -14,28 +14,22 @@ namespace NetworkSniffer.ViewModel
 {
     public class AnalyzerViewModel : ViewModelBase
     {
-        private DateTime startTime;
-
         public AnalyzerViewModel()
         {
             PacketLengthStats = StatsHandler.PacketLengthStats;
 
             TransportProtocolStats = StatsHandler.TransportProtocolStats;
-            
-            StatsHandler.Timer.Start();
-            //testing
-            startTime = StatsHandler.CaptureStartTime = DateTime.Now;
 
             StatsHandler.Timer.Elapsed += Timer_Elapsed;
         }
 
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            CapturingTime = (e.SignalTime - startTime).ToString().Substring(0, 12);
+            CapturingTime = (e.SignalTime - StatsHandler.CaptureStartTime).ToString().Substring(0, 12);
             PacketsTotal = StatsHandler.PacketsTotal;
             BytesTotal = StatsHandler.BytesTotal;
-            AveragePPS = Math.Round((double)PacketsTotal / (e.SignalTime - startTime).Seconds, 3);
-            AverageBPS = BytesTotal / (e.SignalTime - startTime).Seconds;
+            AveragePPS = Math.Round((double)PacketsTotal / (e.SignalTime - StatsHandler.CaptureStartTime).Seconds, 3);
+            AverageBPS = BytesTotal / (e.SignalTime - StatsHandler.CaptureStartTime).Seconds;
         }
 
         public ObservableCollection<PacketLengthCategory> PacketLengthStats { get; private set; }

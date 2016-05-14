@@ -245,6 +245,8 @@ namespace NetworkSniffer.ViewModel
             {
                 AddToFilteredList(newPacket);
             }
+
+            StatsHandler.UpdateStats(newPacket);
         }
 
         private void AddToFilteredList(IPPacket newPacket)
@@ -389,6 +391,8 @@ namespace NetworkSniffer.ViewModel
                     monitor = new InterfaceMonitor(SelectedAddress);
                     monitor.newPacketEventHandler += new InterfaceMonitor.NewPacketEventHandler(ReceiveNewPacket);
                     monitor.StartCapture();
+                    StatsHandler.Timer.Start();
+                    StatsHandler.CaptureStartTime = DateTime.Now;
                 }
             }
         }
