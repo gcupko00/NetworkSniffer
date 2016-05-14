@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using NetworkSniffer.Model;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Timers;
 
 namespace NetworkSniffer.ViewModel
 {
@@ -32,17 +34,27 @@ namespace NetworkSniffer.ViewModel
             new TransportProtocolCategory("UDP"),
             new TransportProtocolCategory("ICMP"),
             new TransportProtocolCategory("IGMP"),
-            new TransportProtocolCategory("other"),
+            new TransportProtocolCategory("Other"),
         };
-        
+
+        public static DateTime CaptureStartTime { get; set; }
+
         public static int PacketsTotal { get; set; }
 
+        public static int BytesTotal { get; set; }
+
+        public static Stopwatch watch = Stopwatch.StartNew();
+
+        public static Timer Timer = new Timer(1);
+
+        #region Methods
         public static void UpdateStats(IPPacket newPacket)
         {
             int newPacketLength = newPacket.IPHeader[0].TotalLength;
             string newPacketProtocol = newPacket.IPHeader[0].TransportProtocolName;
 
             PacketsTotal++;
+            BytesTotal += newPacket.IPHeader[0].TotalLength;
 
             SortPacketByLength(newPacketLength);
             SortPacketByProtocol(newPacketProtocol);
@@ -135,5 +147,6 @@ namespace NetworkSniffer.ViewModel
                 TransportProtocolStats[4].Percentage = (double)TransportProtocolStats[4].Count / PacketsTotal * 100;
             }
         }
+        #endregion
     }
 }

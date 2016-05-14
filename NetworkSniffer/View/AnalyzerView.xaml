@@ -8,8 +8,8 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"></RowDefinition>
-            <RowDefinition Height="1*"></RowDefinition>
-            <RowDefinition Height="3*"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition></ColumnDefinition>
@@ -20,6 +20,37 @@
                     DataContext="{Binding Main, Source={StaticResource Locator}}"
                     Command="{Binding OpenSniffer}"></Button>
         </DockPanel>
+        <StackPanel Grid.Row="1" Grid.Column="0"
+                    HorizontalAlignment="Left" Width="250">
+            <DockPanel>
+                <Label Content="Packets captured:"></Label>
+                <Label HorizontalAlignment="Right"
+                       Content="{Binding PacketsTotal}"></Label>
+            </DockPanel>
+            <DockPanel>
+                <Label Content="Bytes captured:"></Label>
+                <Label HorizontalAlignment="Right"
+                       Content="{Binding BytesTotal}"></Label>
+            </DockPanel>
+            <DockPanel>
+                <Label Content="Total capture time:"></Label>
+                <Label HorizontalAlignment="Right"
+                       Content="{Binding CapturingTime}"></Label>
+            </DockPanel>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="1"
+                    HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="250">
+            <DockPanel>
+                <Label Content="Packets per second:"></Label>
+                <Label HorizontalAlignment="Right"
+                       Content="{Binding AveragePPS}"></Label>
+            </DockPanel>
+            <DockPanel>
+                <Label Content="Bytes per second:"></Label>
+                <Label HorizontalAlignment="Right"
+                       Content="{Binding AverageBPS}"></Label>
+            </DockPanel>
+        </StackPanel>
         <StackPanel Grid.Row="2" Grid.Column="0">
             <Label Margin="20 0" Foreground="DarkBlue" FontSize="14"
                    Content="Transport protocol statistics"></Label>
@@ -50,6 +81,11 @@
                         </GridViewColumn>
                     </GridView>
                 </ListView.View>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="Focusable" Value="false"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
             </ListView>
         </StackPanel>
         <StackPanel Grid.Row="2" Grid.Column="1">
@@ -82,6 +118,11 @@
                         </GridViewColumn>
                     </GridView>
                 </ListView.View>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="Focusable" Value="false"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
             </ListView>
         </StackPanel>
     </Grid>
