@@ -405,9 +405,7 @@ namespace NetworkSniffer.ViewModel
             {
                 monitor.StopCapture();
                 monitor = null;
-
-                //testing
-                //MessageBox.Show("deleted monitor");
+                StatsHandler.Timer.Stop();
             }
         }
 
@@ -418,6 +416,13 @@ namespace NetworkSniffer.ViewModel
             PacketList.Clear();
             FilteredPacketList.Clear();
             filter = FilterBox;
+            StatsHandler.Timer.Stop();
+
+            if (monitor != null)
+            {
+                StatsHandler.CaptureStartTime = DateTime.Now;
+                StatsHandler.Timer.Start();
+            }
         }
 
         public ICommand ResetFilter { get; private set; }
