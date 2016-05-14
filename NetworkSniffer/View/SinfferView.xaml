@@ -44,7 +44,7 @@
             </DockPanel>            
         </DockPanel>
         <ListView Grid.Row="1" Grid.ColumnSpan="2" Height="Auto"
-                  ItemsSource="{Binding Path=FilteredPacketList, Mode=TwoWay}"
+                  ItemsSource="{Binding Path=FilteredPacketList}"
                   SelectedItem="{Binding SelectedPacket, Mode=TwoWay}">
             <ListView.View>
                 <GridView>

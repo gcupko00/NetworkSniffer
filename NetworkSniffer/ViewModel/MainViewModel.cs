@@ -244,7 +244,7 @@ namespace NetworkSniffer.ViewModel
 
         private void AddToFilteredList(IPPacket newPacket)
         {
-            if (String.IsNullOrEmpty(filter))
+            if (string.IsNullOrEmpty(filter))
             {
                 FilteredPacketList.Add(newPacket);
                 return;
@@ -292,7 +292,7 @@ namespace NetworkSniffer.ViewModel
 
         private void StartCaptureExecute()
         {
-            if (SelectedAddress == "" || SelectedAddress == null)
+            if (string.IsNullOrEmpty(SelectedAddress))
             {
                 MessageBox.Show("Please select device address");
             }
