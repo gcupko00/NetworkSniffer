@@ -6,7 +6,7 @@ using System.Windows;
 namespace NetworkSniffer.Model
 {
     /// <summary>
-    /// This class stores values and meanings of IP packet header values
+    /// This class is used to parse and store IP header fields
     /// </summary>
     public class IPHeader
     {

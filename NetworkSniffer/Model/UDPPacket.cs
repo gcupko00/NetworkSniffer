@@ -7,6 +7,9 @@ using System.Windows.Data;
 
 namespace NetworkSniffer.Model
 {
+    /// <summary>
+    /// This class is used to split UDP packet to header and message
+    /// </summary>
     public class UDPPacket
     {
         #region Members
@@ -16,6 +19,11 @@ namespace NetworkSniffer.Model
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Initializes new instance of UDPPacket class
+        /// </summary>
+        /// <param name="byteBuffer">Byte array containing packet data</param>
+        /// <param name="length">Packet size in bytes</param>
         public UDPPacket(byte[] byteBuffer, int length)
         {
             try
@@ -60,7 +68,6 @@ namespace NetworkSniffer.Model
         /// <summary>
         /// Composite collection that stores both header and message
         /// </summary>
-
         public IList PacketContent
         {
             get
@@ -75,9 +82,12 @@ namespace NetworkSniffer.Model
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Puts packet content in the PacketContent list
+        /// Adds header info to TCPHeader "list"
+        /// </summary>
         private void PopulatePacketContents()
         {
-            // Add header info
             UDPHeader.Add(new UDPHeader(byteUDPHeader, (int)UDPHeaderSize));
 
             if (UDPHeader[0].DestinationPort == 53)

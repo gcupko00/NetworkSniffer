@@ -7,6 +7,9 @@ using System.Windows.Data;
 
 namespace NetworkSniffer.Model
 {
+    /// <summary>
+    /// This class is used to split TCP packet to header and message
+    /// </summary>
     public class TCPPacket
     {
         #region Members
@@ -15,21 +18,22 @@ namespace NetworkSniffer.Model
         private byte[] byteTCPMessage;
         #endregion
 
+        #region Constructors
+        /// <summary>
+        /// Initializes new instance of TCPPacket class
+        /// </summary>
+        /// <param name="byteBuffer">Byte array containing packet data</param>
+        /// <param name="length">Packet size in bytes</param>
         public TCPPacket(byte[] byteBuffer, int length)
         {
             try
             {
-                // Create MemoryStream out of received byte array
-                // *check if it is possible to use MemoryStream(byteBuffer)
                 MemoryStream memoryStream = new MemoryStream(byteBuffer, 0, length);
-
-                // Create BinaryReader out of MemoryStream
+                
                 BinaryReader binaryReader = new BinaryReader(memoryStream);
-
-                // Copy header bytes from byteBuffer to byteTCPHeader
+                
                 Array.Copy(byteBuffer, byteTCPHeader, TCPHeaderSize);
-
-                // Copy message data to byteTCPMessage
+                
                 byteTCPMessage = new byte[length - TCPHeaderSize];
                 Array.Copy(byteBuffer, TCPHeaderSize, byteTCPMessage, 0, length - TCPHeaderSize);
 
@@ -43,6 +47,7 @@ namespace NetworkSniffer.Model
                 MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+        #endregion
 
         #region Properties
         /// <summary>
@@ -72,9 +77,12 @@ namespace NetworkSniffer.Model
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Puts packet content in the PacketContent list
+        /// Adds header info to TCPHeader "list"
+        /// </summary>
         private void PopulatePacketContents()
         {
-            // Add header info
             TCPHeader.Add(new TCPHeader(byteTCPHeader, (int)TCPHeaderSize));
             
             if (TCPHeader[0].DestinationPort == 53)

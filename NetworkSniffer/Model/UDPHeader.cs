@@ -3,9 +3,17 @@ using System.Net;
 
 namespace NetworkSniffer.Model
 {
+    /// <summary>
+    /// This class is used to parse and store UDP header fields
+    /// </summary>
     public class UDPHeader
     {
         #region Contructors
+        /// <summary>
+        /// Initializes new instance of UDPHeader class
+        /// </summary>
+        /// <param name="byteBuffer">Byte array containing header data</param>
+        /// <param name="length">Size of header in bytes</param>
         public UDPHeader(byte[] byteBuffer, int length)
         {
             MemoryStream memoryStream = new MemoryStream(byteBuffer, 0, length);

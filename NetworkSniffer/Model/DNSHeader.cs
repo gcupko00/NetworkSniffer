@@ -3,9 +3,17 @@ using System.Net;
 
 namespace NetworkSniffer.Model
 {
+    /// <summary>
+    /// This class is used to parse and store DNS header fields
+    /// </summary>
     public class DNSHeader
     {
         #region Contructors
+        /// <summary>
+        /// Initializes new instance of DNSHeader class
+        /// </summary>
+        /// <param name="byteBuffer">Header data to be parsed</param>
+        /// <param name="length">Header length</param>
         public DNSHeader(byte[] byteBuffer, int length)
         {
             MemoryStream memoryStream = new MemoryStream(byteBuffer, 0, length);

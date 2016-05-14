@@ -3,9 +3,17 @@ using System.Net;
 
 namespace NetworkSniffer.Model
 {
+    /// <summary>
+    /// This class is used to parse and store TCP header fields
+    /// </summary>
     public class TCPHeader
     {
         #region Contructors
+        /// <summary>
+        /// Initializes new instance of TCPHeader class
+        /// </summary>
+        /// <param name="byteBuffer">Byte array containing header data</param>
+        /// <param name="length">Size of header in bytes</param>
         public TCPHeader(byte[] byteBuffer, int length)
         {
             MemoryStream memoryStream = new MemoryStream(byteBuffer, 0, length);
@@ -48,8 +56,7 @@ namespace NetworkSniffer.Model
         public byte DataOffset { get; set; }
 
         public ushort ReservedAndFlags { get; set; }
-
-        private string flags;
+        
         public string Flags
         {
             get

@@ -7,6 +7,9 @@ using System.Windows.Data;
 
 namespace NetworkSniffer.Model
 {
+    /// <summary>
+    /// This class is used to split DNS packet to header and message
+    /// </summary>
     public class DNSPacket
     {
         #region Members
@@ -16,21 +19,21 @@ namespace NetworkSniffer.Model
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Initializes new instance of DNSPacket class
+        /// </summary>
+        /// <param name="byteBuffer">Byte array containing packet data</param>
+        /// <param name="length">Packet size in bytes</param>
         public DNSPacket(byte[] byteBuffer, int length)
         {
             try
             {
-                // Create MemoryStream out of received byte array
-                // *check if it is possible to use MemoryStream(byteBuffer)
                 MemoryStream memoryStream = new MemoryStream(byteBuffer, 0, length);
-
-                // Create BinaryReader out of MemoryStream
+                
                 BinaryReader binaryReader = new BinaryReader(memoryStream);
-
-                // Copy header bytes from byteBuffer to byteDNSHeader
+                
                 Array.Copy(byteBuffer, byteDNSHeader, DNSHeaderSize);
-
-                // Copy message data to byteDNSMessage
+                
                 byteDNSMessage = new byte[length - DNSHeaderSize];
                 Array.Copy(byteBuffer, DNSHeaderSize, byteDNSMessage, 0, length - DNSHeaderSize);
 
@@ -46,8 +49,14 @@ namespace NetworkSniffer.Model
         #endregion
 
         #region Properties
+        /// <summary>
+        /// Holds header part of the DNSPacket
+        /// </summary>
         public List<DNSHeader> DNSHeader { get; set; }
 
+        /// <summary>
+        /// Composite collection that stores header (may be updated to store message)
+        /// </summary>
         public IList PacketContent
         {
             get
@@ -61,9 +70,12 @@ namespace NetworkSniffer.Model
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Puts packet content in the PacketContent list
+        /// Adds header info to TCPHeader "list"
+        /// </summary>
         private void PopulatePacketContents()
         {
-            // Add header info
             DNSHeader.Add(new DNSHeader(byteDNSHeader, (int)DNSHeaderSize));
         }
         #endregion

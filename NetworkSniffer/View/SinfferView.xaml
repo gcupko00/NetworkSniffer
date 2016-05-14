@@ -29,7 +29,12 @@
             <Button Content="Stop"  HorizontalAlignment="Left" VerticalAlignment="Center" Height="25" Padding="10 0" Margin="0 0 5 0"
                     Command="{Binding StopCapture}"></Button>
             <TextBox VerticalAlignment="Center" Height="25" Width="100" Padding="3"
-                     Text="{Binding FilterBox}"></TextBox>
+                     Text="{Binding FilterBox, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                <TextBox.InputBindings>
+                    <KeyBinding Key="Enter"
+                                Command="{Binding ApplyFilter}"/>
+                </TextBox.InputBindings>
+            </TextBox>
             <Button Content="Filter" VerticalAlignment="Center" Height="25" Padding="10 0" Margin="5 0"
                      Command="{Binding ApplyFilter}"></Button>
             <Button Content="Reset" VerticalAlignment="Center" Height="25" Padding="10 0" Margin="0 0 5 0"
