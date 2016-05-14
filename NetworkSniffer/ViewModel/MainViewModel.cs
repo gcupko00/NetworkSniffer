@@ -10,6 +10,8 @@ using System.Windows;
 using System.Windows.Data;
 using System.Text;
 using System.Windows.Documents;
+using System.Collections.Generic;
+using Microsoft.VisualBasic;
 
 namespace NetworkSniffer.ViewModel
 {
@@ -234,34 +236,115 @@ namespace NetworkSniffer.ViewModel
         {
             newPacket.PacketID = (uint)PacketList.Count + 1;
 
-            PacketList.Add(newPacket);
-            AddToFilteredList(newPacket);
-            StatsHandler.UpdateStats(newPacket);
-            //testing
-            //IPAddress test = new IPAddress(newPacket.IPHeader[0].SourceIPAddress);
-            //MessageBox.Show(newPacket.PacketID.ToString());
+            lock (PacketList)
+            {
+                PacketList.Add(newPacket);
+            }
+
+            lock (filteredPacketList)
+            {
+                AddToFilteredList(newPacket);
+            }
         }
 
         private void AddToFilteredList(IPPacket newPacket)
         {
-            if (string.IsNullOrEmpty(filter))
+            // If the filterString is empty, just add newPacket to the FilterPacketList
+            if (String.IsNullOrEmpty(filter))
             {
                 FilteredPacketList.Add(newPacket);
                 return;
             }
-            if (filter.Contains("udp") || filter.Contains("UDP"))
-                if (newPacket.UDPPacket.Count > 0)
-                    if (newPacket.UDPPacket[0].UDPHeader[0].DestinationPort == 53)
-                        FilteredPacketList.Add(newPacket);
+
+            // Split filter into substrings and make it all uppercase
+            filter = filter.ToUpper();
+            List<string> filterList = new List<string>(filter.Split(' '));
+
+            // A list of allowed filters
+            string[] allowedProtocols = { "UDP", "TCP", "IGMP", "ICMP", "DNS" };
+
+            // Remove all substrings that are not in list of allowed filters
+            for (int i = filterList.Count - 1; i >= 0; i--)
+            {
+                // If substring is a protocol from AllowedProtocol list, don't remove it and continue
+                string[] check = Strings.Filter(allowedProtocols, filterList[i], true);
+                if (check != null && check.Length > 0)
+                {
+                    continue;
+                }
+
+                filterList.RemoveAt(i);
+            }
+
+            // If none of the substrings uses the proper syntax, ignore it and add packet
+            // as if there was no filter at all.
+            if (filterList.Count == 0)
+            {
+                FilteredPacketList.Add(newPacket);
+                return;
+            }
+
+            foreach (string filterString in filterList)
+            {
+                if (filterString.Equals("UDP") && newPacket.UDPPacket.Count > 0)
+                {
+                    FilteredPacketList.Add(newPacket);
+                }
+                else if (filterString.Equals("TCP") && newPacket.TCPPacket.Count > 0)
+                {
+                    FilteredPacketList.Add(newPacket);
+                }
+                else if (filterString.Equals("IGMP") &&
+                    newPacket.IPHeader[0].TransportProtocolName == "IGMP")
+                {
+                    FilteredPacketList.Add(newPacket);
+                }
+                else if (filterString.Equals("ICMP") &&
+                    newPacket.IPHeader[0].TransportProtocolName == "ICMP")
+                {
+                    FilteredPacketList.Add(newPacket);
+                }
+                else if (filterString.Equals("DNS") && 
+                    newPacket.UDPPacket.Count > 0 &&
+                    (newPacket.UDPPacket[0].UDPHeader[0].DestinationPort == 53 ||
+                    newPacket.UDPPacket[0].UDPHeader[0].SourcePort == 53))
+                {
+                    FilteredPacketList.Add(newPacket);
+                }
+            }
+
         }
 
         private void FilterAllPackets()
         {
+            // To filter all packets, we must refresh the whole list
             FilteredPacketList.Clear();
 
-            foreach (IPPacket packet in PacketList)
+            lock (PacketList)
             {
-                AddToFilteredList(packet);
+                foreach (IPPacket packet in PacketList)
+                {
+                    lock (FilteredPacketList)
+                    {
+                        AddToFilteredList(packet);
+                    }
+                }
+            }
+
+            // This condition here avoids threading problem:
+            //   If a new packet is captured just before FilterAllPackets() is called, 
+            //   this removes all newPackets that arrived before this function call.
+            while (FilteredPacketList.Count > 2)
+            {
+                uint firstPacketID = filteredPacketList[0].PacketID;
+                uint lastPacketID = filteredPacketList[filteredPacketList.Count - 2].PacketID;
+
+                if (firstPacketID > lastPacketID)
+                {
+                    filteredPacketList.RemoveAt(0);
+                    continue;
+                }
+                break;
             }
         }
         #endregion
