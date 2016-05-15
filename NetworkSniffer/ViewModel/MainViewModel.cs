@@ -11,6 +11,7 @@ using System.Windows.Data;
 using System.Text;
 using System.Windows.Documents;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Microsoft.VisualBasic;
 
 namespace NetworkSniffer.ViewModel
@@ -262,59 +263,135 @@ namespace NetworkSniffer.ViewModel
             filter = filter.ToUpper();
             List<string> filterList = new List<string>(filter.Split(' '));
 
+            List<string> SrcIPList = new List<string>();
+            List<string> DestIPList = new List<string>();
+
             // A list of allowed filters
             string[] allowedProtocols = { "UDP", "TCP", "IGMP", "ICMP", "DNS" };
 
             // Remove all substrings that are not in list of allowed filters
+            // But if a substring is src/dest ip or sp/dp port, tranfser it to its List
             for (int i = filterList.Count - 1; i >= 0; i--)
             {
-                // If substring is a protocol from AllowedProtocol list, don't remove it and continue
-                string[] check = Strings.Filter(allowedProtocols, filterList[i], true);
-                if (check != null && check.Length > 0)
+                // Next two If conditions will add IP addresses to IP Lists, if there are any
+                if (filterList[i].Contains("SRC"))
                 {
-                    continue;
+                    SrcIPList = ValidIPAddress(SrcIPList, filterList[i]);
                 }
-
+                else if (filterList[i].Contains("DEST"))
+                {
+                    DestIPList = ValidIPAddress(DestIPList, filterList[i]);
+                }
+                else
+                {
+                    // If substring is a protocol from AllowedProtocol list,
+                    // don't remove it and continue
+                    string[] check = Strings.Filter(allowedProtocols, filterList[i], true);
+                    if (check != null && check.Length > 0)
+                    {
+                        continue;
+                    }
+                }
+                // Cleaning the garbage
                 filterList.RemoveAt(i);
             }
 
             // If none of the substrings uses the proper syntax, ignore it and add packet
             // as if there was no filter at all.
-            if (filterList.Count == 0)
+            if (filterList.Count == 0 && SrcIPList.Count == 0 && DestIPList.Count == 0)
             {
                 FilteredPacketList.Add(newPacket);
                 return;
             }
 
+            bool ProtocolRule = true;
             foreach (string filterString in filterList)
             {
+                ProtocolRule = false;
                 if (filterString.Equals("UDP") && newPacket.UDPPacket.Count > 0)
                 {
-                    FilteredPacketList.Add(newPacket);
+                    ProtocolRule = true;
+                    break;
                 }
                 else if (filterString.Equals("TCP") && newPacket.TCPPacket.Count > 0)
                 {
-                    FilteredPacketList.Add(newPacket);
+                    ProtocolRule = true;
+                    break;
                 }
                 else if (filterString.Equals("IGMP") &&
                     newPacket.IPHeader[0].TransportProtocolName == "IGMP")
                 {
-                    FilteredPacketList.Add(newPacket);
+                    ProtocolRule = true;
+                    break;
                 }
                 else if (filterString.Equals("ICMP") &&
                     newPacket.IPHeader[0].TransportProtocolName == "ICMP")
                 {
-                    FilteredPacketList.Add(newPacket);
+                    ProtocolRule = true;
+                    break;
                 }
                 else if (filterString.Equals("DNS") && 
                     newPacket.UDPPacket.Count > 0 &&
                     (newPacket.UDPPacket[0].UDPHeader[0].DestinationPort == 53 ||
                     newPacket.UDPPacket[0].UDPHeader[0].SourcePort == 53))
                 {
-                    FilteredPacketList.Add(newPacket);
+                    ProtocolRule = true;
+                    break;
                 }
             }
 
+            bool SrcIPRule = true;
+            foreach (string ip in SrcIPList)
+            {
+                if (ip != newPacket.IPHeader[0].SourceIPAddress.ToString())
+                {
+                    SrcIPRule = false;
+                }
+                else
+                {
+                    SrcIPRule = true;
+                    break;
+                }
+            }
+
+            bool DstIPRule = true;
+            foreach (string ip in DestIPList)
+            {
+                if (ip != newPacket.IPHeader[0].DestinationIpAddress.ToString())
+                {
+                    DstIPRule = false;
+                }
+                else
+                {
+                    DstIPRule = true;
+                    break;
+                }
+            }
+
+            if (ProtocolRule == true && SrcIPRule == true && DstIPRule == true)
+            {
+                FilteredPacketList.Add(newPacket);
+            }
+        }
+
+        private List<string> ValidIPAddress(List<string> IPList, string isValid)
+        {
+            const string PatternIP = @"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$";
+            const string SrcPattern = @"^SRC=" + PatternIP;
+            const string DstPattern = @"^DEST=" + PatternIP;
+
+            if (Regex.Match(isValid, SrcPattern).Success ||
+                Regex.Match(isValid, DstPattern).Success)
+            {
+                string ipString = Regex.Match(isValid, PatternIP).Value;
+                IPAddress ipAddress;
+                if (IPAddress.TryParse(ipString, out ipAddress))
+                {
+                    IPList.Add(ipString);
+                }
+            }
+
+            return IPList;
         }
 
         private void FilterAllPackets()

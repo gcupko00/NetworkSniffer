@@ -28,8 +28,11 @@ namespace NetworkSniffer.ViewModel
             CapturingTime = (e.SignalTime - StatsHandler.CaptureStartTime).ToString().Substring(0, 12);
             PacketsTotal = StatsHandler.PacketsTotal;
             BytesTotal = StatsHandler.BytesTotal;
-            AveragePPS = Math.Round((double)PacketsTotal / (e.SignalTime - StatsHandler.CaptureStartTime).Seconds, 3);
-            AverageBPS = BytesTotal / (e.SignalTime - StatsHandler.CaptureStartTime).Seconds;
+            if ((e.SignalTime - StatsHandler.CaptureStartTime).Seconds != 0)
+            {
+                AveragePPS = Math.Round((double)PacketsTotal / (e.SignalTime - StatsHandler.CaptureStartTime).Seconds, 3);
+                AverageBPS = BytesTotal / (e.SignalTime - StatsHandler.CaptureStartTime).Seconds;
+            }
         }
 
         public ObservableCollection<PacketLengthCategory> PacketLengthStats { get; private set; }
