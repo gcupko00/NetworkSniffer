@@ -263,25 +263,43 @@ namespace NetworkSniffer.ViewModel
             filter = filter.ToUpper();
             List<string> filterList = new List<string>(filter.Split(' '));
 
+            // List of IP addresses from src/dest syntax
             List<string> SrcIPList = new List<string>();
             List<string> DestIPList = new List<string>();
 
+            // List of Ports from sp/dp syntax
+            List<string> SrcPortList = new List<string>();
+            List<string> DestPortList = new List<string>();
+
             // A list of allowed filters
             string[] allowedProtocols = { "UDP", "TCP", "IGMP", "ICMP", "DNS" };
+            // After cleaning all the garbage, filterList should contain only strings
+            // from allowedProtocols
 
             // Remove all substrings that are not in list of allowed filters
             // But if a substring is src/dest ip or sp/dp port, tranfser it to its List
             for (int i = filterList.Count - 1; i >= 0; i--)
             {
                 // Next two If conditions will add IP addresses to IP Lists, if there are any
-                if (filterList[i].Contains("SRC"))
+                if (filterList[i].Contains("SRC="))
                 {
                     SrcIPList = ValidIPAddress(SrcIPList, filterList[i]);
                 }
-                else if (filterList[i].Contains("DEST"))
+                else if (filterList[i].Contains("DEST="))
                 {
                     DestIPList = ValidIPAddress(DestIPList, filterList[i]);
                 }
+
+                // Next two If conditions will add Ports to Port Lists, if there are any
+                else if (filterList[i].Contains("SP="))
+                {
+                    SrcPortList = ValidPort(SrcPortList , filterList[i]);
+                }
+                else if (filterList[i].Contains("DP="))
+                {
+                    DestPortList = ValidPort(DestPortList , filterList[i]);
+                }
+
                 else
                 {
                     // If substring is a protocol from AllowedProtocol list,
@@ -298,7 +316,8 @@ namespace NetworkSniffer.ViewModel
 
             // If none of the substrings uses the proper syntax, ignore it and add packet
             // as if there was no filter at all.
-            if (filterList.Count == 0 && SrcIPList.Count == 0 && DestIPList.Count == 0)
+            if (filterList.Count == 0 && SrcIPList.Count == 0 && DestIPList.Count == 0 &&
+                SrcPortList.Count == 0 && DestPortList.Count == 0)
             {
                 FilteredPacketList.Add(newPacket);
                 return;
@@ -343,11 +362,8 @@ namespace NetworkSniffer.ViewModel
             bool SrcIPRule = true;
             foreach (string ip in SrcIPList)
             {
-                if (ip != newPacket.IPHeader[0].SourceIPAddress.ToString())
-                {
-                    SrcIPRule = false;
-                }
-                else
+                SrcIPRule = false;
+                if (ip == newPacket.IPHeader[0].SourceIPAddress.ToString())
                 {
                     SrcIPRule = true;
                     break;
@@ -357,23 +373,63 @@ namespace NetworkSniffer.ViewModel
             bool DstIPRule = true;
             foreach (string ip in DestIPList)
             {
-                if (ip != newPacket.IPHeader[0].DestinationIpAddress.ToString())
-                {
-                    DstIPRule = false;
-                }
-                else
+                DstIPRule = false;
+                if (ip == newPacket.IPHeader[0].DestinationIpAddress.ToString())
                 {
                     DstIPRule = true;
                     break;
                 }
             }
 
-            if (ProtocolRule == true && SrcIPRule == true && DstIPRule == true)
+            bool SrcPortRule = true;
+            foreach (string port in SrcPortList)
+            {
+                SrcPortRule = false;
+                if (newPacket.TCPPacket.Count > 0 &&
+                    port == newPacket.TCPPacket[0].TCPHeader[0].SourcePort.ToString())
+                {
+                    SrcPortRule = true;
+                    break;
+                }
+                else if (newPacket.UDPPacket.Count > 0 &&
+                         port == newPacket.UDPPacket[0].UDPHeader[0].SourcePort.ToString()) 
+                {
+                    SrcPortRule = true;
+                    break;
+                }
+            }
+
+            bool DestPortRule = true;
+            foreach (string port in DestPortList)
+            {
+                DestPortRule = false;
+                if (newPacket.TCPPacket.Count > 0 &&
+                    port == newPacket.TCPPacket[0].TCPHeader[0].DestinationPort.ToString())
+                {
+                    DestPortRule = true;
+                    break;
+                }
+                else if (newPacket.UDPPacket.Count > 0 &&
+                         port == newPacket.UDPPacket[0].UDPHeader[0].DestinationPort.ToString()) 
+                {
+                    DestPortRule = true;
+                    break;
+                }
+            }
+
+            if (ProtocolRule == true && SrcIPRule == true && DstIPRule == true &&
+                SrcPortRule == true && DestPortRule == true)
             {
                 FilteredPacketList.Add(newPacket);
             }
         }
 
+        /// <summary>
+        /// Returns the same List given in parameter list, but with new string
+        /// if evaluated as valid
+        /// </summary>
+        /// <param name="IPList">List of IPs in which new IP will be stored</param>
+        /// <param name="isValid">IP to be evaluated</param> 
         private List<string> ValidIPAddress(List<string> IPList, string isValid)
         {
             const string PatternIP = @"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$";
@@ -392,6 +448,32 @@ namespace NetworkSniffer.ViewModel
             }
 
             return IPList;
+        }
+
+        /// <summary>
+        /// Returns the same List given in parameter list, but with new string
+        /// if evaluated as valid
+        /// </summary>
+        /// <param name="IPList">List of Ports in which new Port will be stored</param>
+        /// <param name="isValid">Port to be evaluated</param> 
+        private List<string> ValidPort(List<string> PortList, string isValid)
+        {
+            const string PatternPort = @"\d{1,5}$";
+            const string SrcPattern = @"^SP=" + PatternPort;
+            const string DstPattern = @"^DP=" + PatternPort;
+
+            if (Regex.Match(isValid, SrcPattern).Success ||
+                Regex.Match(isValid, DstPattern).Success)
+            {
+                string PortString = Regex.Match(isValid, PatternPort).Value;
+                ushort usPort;
+                if (UInt16.TryParse(PortString, out usPort))
+                {
+                    PortList.Add(PortString);
+                }
+            }
+
+            return PortList;
         }
 
         private void FilterAllPackets()
