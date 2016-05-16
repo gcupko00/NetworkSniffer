@@ -1,5 +1,31 @@
 # NetworkSniffer
 
-A network sniffer using MVVM architectural pattern.
+A network sniffer made in WPF using MVVM architectural pattern.
 
-## WIP
+<a href="">
+<img src="https://raw.githubusercontent.com/gcupko00/NetworkSniffer/master/NetworkSniffer_demo.gif" height="444" width="663" border="black"/>
+</a>
+
+---
+
+## Features
+- Capturing and analyzing IP packets
+- Captured packets statistics tracking
+- Analyzing transport layer packets
+- Filtering incoming and received packets by transport protocol, IP address, port and length
+
+### Suported protocols
+- TCP - parsed
+- UDP - parsed
+- ICMP - recognized (to be parsed in future versions)
+- IGMP - recognized (to be parsed in future versions)
+- DNS - parsed
+
+---
+
+## About
+This application is made as a seminar project for a college course.
+
+### Made by
+<a href="https://github.com/gcupko00/">gcupko00</a></br>
+<a href="https://github.com/bolkonksy/">bolkonksy</a>
