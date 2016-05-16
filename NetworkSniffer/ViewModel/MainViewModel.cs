@@ -1,17 +1,18 @@
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using Microsoft.VisualBasic;
-using NetworkSniffer.Model;
-using System;
-using System.Collections.Generic;
+using System.Windows.Input;
 using System.Collections.ObjectModel;
 using System.Net;
+using NetworkSniffer.Model;
 using System.Net.Sockets;
-using System.Text;
-using System.Text.RegularExpressions;
+using System;
 using System.Windows;
 using System.Windows.Data;
-using System.Windows.Input;
+using System.Text;
+using System.Windows.Documents;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using Microsoft.VisualBasic;
 
 namespace NetworkSniffer.ViewModel
 {
@@ -46,6 +47,7 @@ namespace NetworkSniffer.ViewModel
             ClearPacketList = new RelayCommand(() => ClearPacketListExecute());
             ResetFilter = new RelayCommand(() => ResetFilterExecute());
             ApplyFilter = new RelayCommand(() => ApplyFilterExecute());
+            RefreshDeviceAddressList = new RelayCommand(() => RefreshDeviceAddressListExecute());
 
             DeviceAddressList = new ObservableCollection<string>();
             PacketList = new ObservableCollection<IPPacket>();
@@ -57,6 +59,9 @@ namespace NetworkSniffer.ViewModel
 
         #region Properties
         private ViewModelBase currentViewModel;
+        /// <summary>
+        /// Viewmodel for currently displayed view
+        /// </summary>
         public ViewModelBase CurrentViewModel
         {
             get
@@ -69,9 +74,11 @@ namespace NetworkSniffer.ViewModel
                 RaisePropertyChanged("CurrentViewModel");
             }
         }
-
-        // List for storing all captured packets
+                
         private ObservableCollection<IPPacket> packetList;
+        /// <summary>
+        /// Stores all captured packets
+        /// </summary>
         public ObservableCollection<IPPacket> PacketList
         {
             get
@@ -85,9 +92,11 @@ namespace NetworkSniffer.ViewModel
                 BindingOperations.EnableCollectionSynchronization(packetList, packetListLock);
             }
         }
-
-        // List of filtered packets from PacketList that will be displayed on ViewList
+        
         private ObservableCollection<IPPacket> filteredPacketList;
+        /// <summary>
+        /// Stores packets from PacketList filtered according to filter conditions
+        /// </summary>
         public ObservableCollection<IPPacket> FilteredPacketList
         {
             get
@@ -101,9 +110,11 @@ namespace NetworkSniffer.ViewModel
                 BindingOperations.EnableCollectionSynchronization(filteredPacketList, packetListLock);
             }
         }
-
-        // packet selected in listview
+        
         private IPPacket selectedPacket;
+        /// <summary>
+        /// Packet currently selected in FilteredPacketList
+        /// </summary>
         public IPPacket SelectedPacket
         {
             get
@@ -113,6 +124,7 @@ namespace NetworkSniffer.ViewModel
             set
             {
                 selectedPacket = value;
+                GetPacketHexAndCharData();
                 // There can be only one selected packet, so the list must be empty
                 SelectedPacketTree.Clear();
                 SelectedPacketTree.Add(selectedPacket);
@@ -124,11 +136,20 @@ namespace NetworkSniffer.ViewModel
 
         // Since TreeView ItemsSource must be bound to the ObservableCollection, 
         // selected packet must be ObservableCollection 
+        /// <summary>
+        /// Used to bind TreeViewItems to SelectedPacket properties
+        /// </summary>
         public ObservableCollection<IPPacket> SelectedPacketTree { get; private set; }
 
+        /// <summary>
+        /// List of available network interfaces addresses
+        /// </summary>
         public ObservableCollection<string> DeviceAddressList { get; private set; }
 
         private string selectedAddress;
+        /// <summary>
+        /// Currently selected IP address of an interface on which packets are being captured
+        /// </summary>
         public string SelectedAddress
         {
             get
@@ -142,67 +163,44 @@ namespace NetworkSniffer.ViewModel
             }
         }
 
+        private string hexPacketData;
+        /// <summary>
+        /// Selected IP packet data in hexadecimal notation
+        /// </summary>
         public string HexPacketData
         {
             get
             {
-                try
-                {
-                    int length = SelectedPacket.IPHeader[0].TotalLength;
-
-                    StringBuilder stringBuilder = new StringBuilder(length * 2);
-
-                    // Copy header and message from selected IP packet to packetData
-                    byte[] packetData = new byte[length];
-                    Array.Copy(SelectedPacket.ByteIPHeader, packetData, SelectedPacket.ByteIPHeader.Length);
-                    Array.Copy(SelectedPacket.ByteIPMessage, 0, packetData, SelectedPacket.ByteIPHeader.Length, SelectedPacket.ByteIPMessage.Length);
-
-                    for (int i = 0; i < length; i++)
-                    {
-                        stringBuilder.Append(packetData[i].ToString("x2") + " ");
-                    }
-
-                    return stringBuilder.ToString();
-                }
-                catch
-                {
-                    return null;
-                }
+                return hexPacketData;
+            }
+            set
+            {
+                hexPacketData = value;
+                RaisePropertyChanged("HexPacketData");
             }
         }
 
+        private string charPacketData;
+        /// <summary>
+        /// Selected IP packet data in ASCII character notation
+        /// </summary>
         public string CharPacketData
         {
             get
             {
-                try {
-                    int length = SelectedPacket.IPHeader[0].TotalLength;
-
-                    StringBuilder stringBuilder = new StringBuilder();
-
-                    // Copy header and message from selected IP packet to packetData
-                    byte[] packetData = new byte[length];
-                    Array.Copy(SelectedPacket.ByteIPHeader, packetData, SelectedPacket.ByteIPHeader.Length);
-                    Array.Copy(SelectedPacket.ByteIPMessage, 0, packetData, SelectedPacket.ByteIPHeader.Length, SelectedPacket.ByteIPMessage.Length);
-
-                    for (int i = 0; i < length; i++)
-                    {
-                        if (packetData[i] > 31 && packetData[i] < 128)
-                            stringBuilder.Append((char)packetData[i]);
-                        else
-                            stringBuilder.Append(".");
-                    }
-
-                    return stringBuilder.ToString();
-                }
-                catch
-                {
-                    return null;
-                }
+                return charPacketData;
+            }
+            set
+            {
+                charPacketData = value;
+                RaisePropertyChanged("CharPacketData");
             }
         }
 
         private string filterBox;
+        /// <summary>
+        /// Filter conditions used to fill FilteredPacketsList
+        /// </summary>
         public string FilterBox
         {
             get
@@ -218,6 +216,9 @@ namespace NetworkSniffer.ViewModel
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Gets IP addresses of all available hosts
+        /// </summary>
         private void GetAddresses()
         {
             IPHostEntry HostEntry = Dns.GetHostEntry(Dns.GetHostName());
@@ -230,8 +231,17 @@ namespace NetworkSniffer.ViewModel
                     }
                 }
             }
+
+            if (DeviceAddressList.Count > 0)
+            {
+                SelectedAddress = DeviceAddressList[0];
+            }
         }        
 
+        /// <summary>
+        /// Adds newly received packet to packet lists
+        /// </summary>
+        /// <param name="newPacket">Packet to be added to packet lists</param>
         private void ReceiveNewPacket(IPPacket newPacket)
         {
             newPacket.PacketID = (uint)PacketList.Count + 1;
@@ -249,6 +259,10 @@ namespace NetworkSniffer.ViewModel
             StatsHandler.UpdateStats(newPacket);
         }
 
+        /// <summary>
+        /// Decides whether newPacket should be added to FilteredPacketList or not
+        /// </summary>
+        /// <param name="newPacket">Packet to be processed and added to FilteredPacketList if it satisfies filter conditions</param>
         private void AddToFilteredList(IPPacket newPacket)
         {
             // If the filterString is empty, just add newPacket to the FilterPacketList
@@ -296,21 +310,21 @@ namespace NetworkSniffer.ViewModel
                 // Next two If conditions will add Ports to Port Lists, if there are any
                 else if (filterList[i].Contains("SP="))
                 {
-                    SrcPortList = ValidPort(SrcPortList, filterList[i]);
+                    SrcPortList = ValidPort(SrcPortList , filterList[i]);
                 }
                 else if (filterList[i].Contains("DP="))
                 {
-                    DestPortList = ValidPort(DestPortList, filterList[i]);
+                    DestPortList = ValidPort(DestPortList , filterList[i]);
                 }
 
                 // Next two If conditions will add Length to Length Lists, if there are any
                 else if (filterList[i].Contains("LENGTH>"))
                 {
-                    HigherLengthList = ValidIPLength(HigherLengthList, filterList[i]);
+                    HigherLengthList = ValidIPLength(HigherLengthList , filterList[i]);
                 }
                 else if (filterList[i].Contains("LENGTH<"))
                 {
-                    LowerLengthList = ValidIPLength(LowerLengthList, filterList[i]);
+                    LowerLengthList = ValidIPLength(LowerLengthList , filterList[i]);
                 }
 
                 // This else keeps only allowedProtocols in filterList
@@ -510,7 +524,7 @@ namespace NetworkSniffer.ViewModel
             {
                 string PortString = Regex.Match(isValid, PatternPort).Value;
                 ushort usPort;
-                if (ushort.TryParse(PortString, out usPort))
+                if (UInt16.TryParse(PortString, out usPort))
                 {
                     PortList.Add(PortString);
                 }
@@ -531,46 +545,23 @@ namespace NetworkSniffer.ViewModel
             const string LowerPattern = @"^LENGTH<" + PatternLength;
             const string HigherPattern = @"^LENGTH>" + PatternLength;
 
-            bool HigherBool = Regex.Match(isValid, HigherPattern).Success;
-            bool LowerBool = Regex.Match(isValid, LowerPattern).Success; 
-            if (HigherBool || LowerBool)
+            if (Regex.Match(isValid, HigherPattern).Success ||
+                Regex.Match(isValid, LowerPattern).Success)
             {
                 string LengthString = Regex.Match(isValid, PatternLength).Value;
-                ushort IPLength;
-
-                // We actually store only one value per list, for example in "length>40 length>30"
-                // we only store 40 in the list, because storing 30 is unnecessary
-                if (ushort.TryParse(LengthString, out IPLength))
+                ushort usPort;
+                if (UInt16.TryParse(LengthString, out usPort))
                 {
-                    if (LengthIPList.Count == 0)
-                    {
-                        LengthIPList.Add(LengthString);
-                    }
-                    // So if list already contains one element, replace it with higher or lower
-                    // if needed, depending on the list type(LowerLengthList or HigherLengthList) 
-                    else
-                    {
-                        if (HigherBool)
-                        {
-                            if (IPLength > short.Parse(LengthIPList[0]))
-                            {
-                                LengthIPList[0] = LengthString;
-                            }
-                        }
-                        else if (LowerBool)
-                        {
-                            if (IPLength < short.Parse(LengthIPList[0]))
-                            {
-                                LengthIPList[0] = LengthString;
-                            }
-                        }
-                    }
+                    LengthIPList.Add(LengthString);
                 }
             }
 
             return LengthIPList;
         }
-
+        
+        /// <summary>
+        /// Filters all received packets from PacketList
+        /// </summary>
         private void FilterAllPackets()
         {
             // To filter all packets, we must refresh the whole list
@@ -602,6 +593,39 @@ namespace NetworkSniffer.ViewModel
                 }
                 break;
             }
+        }
+
+        /// <summary>
+        /// Converts IP packet data from byte array to hexadecimal and char
+        /// and stores them in HexPacketData CharPacketData properties
+        /// </summary>
+        private void GetPacketHexAndCharData()
+        {
+            int length = SelectedPacket.IPHeader[0].TotalLength;
+
+            StringBuilder charStringBuilder = new StringBuilder();
+            StringBuilder hexStringBuilder = new StringBuilder();
+
+            // Copy header and message from selected IP packet to packetData
+            byte[] packetData = new byte[length];
+            Array.Copy(SelectedPacket.ByteIPHeader, packetData, SelectedPacket.ByteIPHeader.Length);
+            Array.Copy(SelectedPacket.ByteIPMessage, 0, packetData, SelectedPacket.ByteIPHeader.Length, SelectedPacket.ByteIPMessage.Length);
+
+            for (int i = 0; i < length; i++)
+            {
+                if (packetData[i] > 31 && packetData[i] < 128)
+                    charStringBuilder.Append((char)packetData[i]);
+                else
+                    charStringBuilder.Append(".");
+            }
+            
+            for (int i = 0; i < length; i++)
+            {
+                hexStringBuilder.Append(packetData[i].ToString("x2") + " ");
+            }
+
+            CharPacketData = charStringBuilder.ToString();
+            HexPacketData = hexStringBuilder.ToString();
         }
         #endregion
 
@@ -694,6 +718,21 @@ namespace NetworkSniffer.ViewModel
         {
             filter = FilterBox;
             FilterAllPackets();
+        }
+
+        public ICommand RefreshDeviceAddressList { get; private set; }
+
+        private void RefreshDeviceAddressListExecute()
+        {
+            string prevSelectedAddress = SelectedAddress;
+
+            DeviceAddressList.Clear();
+            GetAddresses();
+
+            if (DeviceAddressList.Contains(prevSelectedAddress))
+            {
+                SelectedAddress = prevSelectedAddress;
+            }
         }
         #endregion
     }

@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:NetworkSniffer.View"
              xmlns:model="clr-namespace:NetworkSniffer.Model"
              xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity" 
              MinHeight="400" MinWidth="600"
              HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
              DataContext="{Binding Main, Source={StaticResource Locator}}">
@@ -23,7 +24,13 @@
         <DockPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
             <ComboBox Height="25" Width="130" Padding="10 0" Margin="5 0 0 0" VerticalContentAlignment="Center" ToolTip="Select IP address" 
                       SelectedItem="{Binding SelectedAddress, Mode=TwoWay}"
-                      ItemsSource="{Binding DeviceAddressList}" SelectedIndex="0" />
+                      ItemsSource="{Binding DeviceAddressList}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="DropDownOpened" >
+                        <i:InvokeCommandAction Command="{Binding RefreshDeviceAddressList}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ComboBox>
             <Button Content="Start"  HorizontalAlignment="Left" VerticalAlignment="Center" Height="25" Padding="10 0" Margin="5 0"
                     Command="{Binding StartCapture}"></Button>
             <Button Content="Stop"  HorizontalAlignment="Left" VerticalAlignment="Center" Height="25" Padding="10 0" Margin="0 0 5 0"
