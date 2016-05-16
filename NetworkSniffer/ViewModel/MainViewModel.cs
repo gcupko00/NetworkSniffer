@@ -271,6 +271,10 @@ namespace NetworkSniffer.ViewModel
             List<string> SrcPortList = new List<string>();
             List<string> DestPortList = new List<string>();
 
+            // List of Lengths from length>/length< syntax
+            List<string> HigherLengthList = new List<string>();
+            List<string> LowerLengthList = new List<string>();
+
             // A list of allowed filters
             string[] allowedProtocols = { "UDP", "TCP", "IGMP", "ICMP", "DNS" };
             // After cleaning all the garbage, filterList should contain only strings
@@ -300,6 +304,17 @@ namespace NetworkSniffer.ViewModel
                     DestPortList = ValidPort(DestPortList , filterList[i]);
                 }
 
+                // Next two If conditions will add Length to Length Lists, if there are any
+                else if (filterList[i].Contains("LENGTH>"))
+                {
+                    HigherLengthList = ValidIPLength(HigherLengthList , filterList[i]);
+                }
+                else if (filterList[i].Contains("LENGTH<"))
+                {
+                    LowerLengthList = ValidIPLength(LowerLengthList , filterList[i]);
+                }
+
+                // This else keeps only allowedProtocols in filterList
                 else
                 {
                     // If substring is a protocol from AllowedProtocol list,
@@ -317,7 +332,8 @@ namespace NetworkSniffer.ViewModel
             // If none of the substrings uses the proper syntax, ignore it and add packet
             // as if there was no filter at all.
             if (filterList.Count == 0 && SrcIPList.Count == 0 && DestIPList.Count == 0 &&
-                SrcPortList.Count == 0 && DestPortList.Count == 0)
+                SrcPortList.Count == 0 && DestPortList.Count == 0 &&
+                HigherLengthList.Count == 0 && LowerLengthList.Count == 0)
             {
                 FilteredPacketList.Add(newPacket);
                 return;
@@ -417,8 +433,36 @@ namespace NetworkSniffer.ViewModel
                 }
             }
 
+            bool LowerLengthRule = true;
+            ushort packetLength = newPacket.IPHeader[0].TotalLength;
+            foreach (string LowerLength in LowerLengthList)
+            {
+                LowerLengthRule = false;
+                ushort lowerLenght = UInt16.Parse(LowerLength);
+                
+                if (lowerLenght > packetLength)
+                {
+                    LowerLengthRule = true;
+                    break;
+                }
+            }
+
+            bool HigherLengthRule = true;
+            foreach (string HigherLength in HigherLengthList)
+            {
+                HigherLengthRule = false;
+                ushort higherLenght = UInt16.Parse(HigherLength);
+                
+                if (higherLenght < packetLength)
+                {
+                    HigherLengthRule = true;
+                    break;
+                }
+            }
+
             if (ProtocolRule == true && SrcIPRule == true && DstIPRule == true &&
-                SrcPortRule == true && DestPortRule == true)
+                SrcPortRule == true && DestPortRule == true && LowerLengthRule == true &&
+                HigherLengthRule == true)
             {
                 FilteredPacketList.Add(newPacket);
             }
@@ -454,7 +498,7 @@ namespace NetworkSniffer.ViewModel
         /// Returns the same List given in parameter list, but with new string
         /// if evaluated as valid
         /// </summary>
-        /// <param name="IPList">List of Ports in which new Port will be stored</param>
+        /// <param name="PortList">List of Ports in which new Port will be stored</param>
         /// <param name="isValid">Port to be evaluated</param> 
         private List<string> ValidPort(List<string> PortList, string isValid)
         {
@@ -474,6 +518,32 @@ namespace NetworkSniffer.ViewModel
             }
 
             return PortList;
+        }
+
+        /// <summary>
+        /// Returns the same List given in parameter list, but with new string
+        /// if evaluated as valid
+        /// </summary>
+        /// <param name="LengthIPList">List of Lengths in which new Length will be stored</param>
+        /// <param name="isValid">Length to be evaluated</param> 
+        private List<string> ValidIPLength(List<string> LengthIPList, string isValid)
+        {
+            const string PatternLength = @"\d{1,5}$";
+            const string LowerPattern = @"^LENGTH<" + PatternLength;
+            const string HigherPattern = @"^LENGTH>" + PatternLength;
+
+            if (Regex.Match(isValid, HigherPattern).Success ||
+                Regex.Match(isValid, LowerPattern).Success)
+            {
+                string LengthString = Regex.Match(isValid, PatternLength).Value;
+                ushort usPort;
+                if (UInt16.TryParse(LengthString, out usPort))
+                {
+                    LengthIPList.Add(LengthString);
+                }
+            }
+
+            return LengthIPList;
         }
 
         private void FilterAllPackets()
