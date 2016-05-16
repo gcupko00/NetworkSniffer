@@ -24,7 +24,8 @@
         <DockPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
             <ComboBox Height="25" Width="130" Padding="10 0" Margin="5 0 0 0" VerticalContentAlignment="Center" ToolTip="Select IP address" 
                       SelectedItem="{Binding SelectedAddress, Mode=TwoWay}"
-                      ItemsSource="{Binding DeviceAddressList}">
+                      ItemsSource="{Binding DeviceAddressList}"
+                      IsEnabled="{Binding IsInterfaceChangeAllowed}">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="DropDownOpened" >
                         <i:InvokeCommandAction Command="{Binding RefreshDeviceAddressList}" />
@@ -32,9 +33,11 @@
                 </i:Interaction.Triggers>
             </ComboBox>
             <Button Content="Start"  HorizontalAlignment="Left" VerticalAlignment="Center" Height="25" Padding="10 0" Margin="5 0"
-                    Command="{Binding StartCapture}"></Button>
+                    Command="{Binding StartCapture}"
+                    IsEnabled="{Binding IsStartEnabled}"></Button>
             <Button Content="Stop"  HorizontalAlignment="Left" VerticalAlignment="Center" Height="25" Padding="10 0" Margin="0 0 5 0"
-                    Command="{Binding StopCapture}"></Button>
+                    Command="{Binding StopCapture}"
+                    IsEnabled="{Binding IsStopEnabled}"></Button>
             <TextBox VerticalAlignment="Center" Height="25" Width="250" Padding="3"
                      Text="{Binding FilterBox, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                 <TextBox.InputBindings>

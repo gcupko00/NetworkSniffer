@@ -213,6 +213,57 @@ namespace NetworkSniffer.ViewModel
                 RaisePropertyChanged("FilterBox");
             }
         }
+
+        private bool isInterfaceChangeAllowed = true;
+        /// <summary>
+        /// Used to enable/disable capture interface change
+        /// </summary>
+        public bool IsInterfaceChangeAllowed
+        {
+            get
+            {
+                return isInterfaceChangeAllowed;
+            }
+            set
+            {
+                isInterfaceChangeAllowed = value;
+                RaisePropertyChanged("IsInterfaceChangeAllowed");
+            }
+        }
+
+        private bool isStartEnabled = true;
+        /// <summary>
+        /// Used to enable/disable capture start
+        /// </summary>
+        public bool IsStartEnabled
+        {
+            get
+            {
+                return isStartEnabled;
+            }
+            set
+            {
+                isStartEnabled = value;
+                RaisePropertyChanged("IsStartEnabled");
+            }
+        }
+
+        private bool isStopEnabled = false;
+        /// <summary>
+        /// Used to enable/disable capture start
+        /// </summary>
+        public bool IsStopEnabled
+        {
+            get
+            {
+                return isStopEnabled;
+            }
+            set
+            {
+                isStopEnabled = value;
+                RaisePropertyChanged("IsStopEnabled");
+            }
+        }
         #endregion
 
         #region Methods
@@ -671,6 +722,9 @@ namespace NetworkSniffer.ViewModel
                     monitor.StartCapture();
                     StatsHandler.Timer.Start();
                     StatsHandler.CaptureStartTime = DateTime.Now;
+                    IsInterfaceChangeAllowed = false;
+                    IsStartEnabled = false;
+                    IsStopEnabled = true;
                 }
             }
         }
@@ -684,6 +738,9 @@ namespace NetworkSniffer.ViewModel
                 monitor.StopCapture();
                 monitor = null;
                 StatsHandler.Timer.Stop();
+                IsInterfaceChangeAllowed = true;
+                IsStartEnabled = true;
+                IsStopEnabled = false;
             }
         }
 
