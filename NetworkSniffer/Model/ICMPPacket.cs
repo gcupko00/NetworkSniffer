@@ -8,23 +8,23 @@ using System.Windows.Data;
 namespace NetworkSniffer.Model
 {
     /// <summary>
-    /// This class is used to split UDP packet to header and message
+    /// This class is used to extract ICMP header
     /// </summary>
-    public class UDPPacket
+    public class ICMPPacket
     {
         #region Members
-        private const uint UDPHeaderSize = 8;
-        private byte[] byteUDPHeader = new byte[UDPHeaderSize];
-        private byte[] byteUDPMessage;
+        private const uint ICMPHeaderSize = 8;
+        private byte[] byteICMPHeader = new byte[ICMPHeaderSize];
+        private byte[] byteICMPMessage;
         #endregion
 
         #region Constructors
         /// <summary>
-        /// Initializes new instance of UDPPacket class
+        /// Initializes new instance of ICMPPacket class
         /// </summary>
         /// <param name="byteBuffer">Byte array containing packet data</param>
         /// <param name="length">Packet size in bytes</param>
-        public UDPPacket(byte[] byteBuffer, int length)
+        public ICMPPacket(byte[] byteBuffer, int length)
         {
             try
             {
@@ -35,14 +35,13 @@ namespace NetworkSniffer.Model
                 BinaryReader binaryReader = new BinaryReader(memoryStream);
 
                 // Copy header bytes from byteBuffer to byteUDPHeader
-                Array.Copy(byteBuffer, byteUDPHeader, UDPHeaderSize);
+                Array.Copy(byteBuffer, byteICMPHeader, ICMPHeaderSize);
 
                 // Copy message data to byteUDPMessage
-                byteUDPMessage = new byte[length - UDPHeaderSize];
-                Array.Copy(byteBuffer, UDPHeaderSize, byteUDPMessage, 0, length - UDPHeaderSize);
+                byteICMPMessage = new byte[length - ICMPHeaderSize];
+                Array.Copy(byteBuffer, ICMPHeaderSize, byteICMPMessage, 0, length - ICMPHeaderSize);
 
-                UDPHeader = new List<UDPHeader>();
-                DNSPacket = new List<DNSPacket>();
+                ICMPHeader = new List<ICMPHeader>();
 
                 PopulatePacketContents();
             }
@@ -55,17 +54,12 @@ namespace NetworkSniffer.Model
 
         #region Properties
         /// <summary>
-        /// Holds only one element - header part of the UDPPacket
+        /// Holds only one element - header part of the ICMPPacket
         /// </summary>
-        public List<UDPHeader> UDPHeader { get; set; }
+        public List<ICMPHeader> ICMPHeader { get; set; }
 
         /// <summary>
-        /// Holds UDP message if application protocol is DNS
-        /// </summary>
-        public List<DNSPacket> DNSPacket { get; set; }
-
-        /// <summary>
-        /// Composite collection that stores both header and message
+        /// Composite collection that stores header
         /// </summary>
         public IList PacketContent
         {
@@ -73,8 +67,7 @@ namespace NetworkSniffer.Model
             {
                 return new CompositeCollection()
                 {
-                    new CollectionContainer() { Collection = UDPHeader },
-                    new CollectionContainer() { Collection = DNSPacket }
+                    new CollectionContainer() { Collection = ICMPHeader }
                 };
             }
         }
@@ -83,20 +76,11 @@ namespace NetworkSniffer.Model
         #region Methods
         /// <summary>
         /// Puts packet content in the PacketContent list
-        /// Adds header info to TCPHeader "list"
+        /// Adds header info to ICMPHeader "list"
         /// </summary>
         private void PopulatePacketContents()
         {
-            UDPHeader.Add(new UDPHeader(byteUDPHeader, (int)UDPHeaderSize));
-
-            if (UDPHeader[0].DestinationPort == 53)
-            {
-                DNSPacket.Add(new DNSPacket(byteUDPMessage, byteUDPMessage.Length));
-            }
-            else if (UDPHeader[0].SourcePort == 53)
-            {
-                DNSPacket.Add(new DNSPacket(byteUDPMessage, byteUDPMessage.Length));
-            }
+            ICMPHeader.Add(new ICMPHeader(byteICMPHeader, (int)ICMPHeaderSize));
         }
         #endregion
     }
