@@ -39,7 +39,8 @@
                     Command="{Binding StopCapture}"
                     IsEnabled="{Binding IsStopEnabled}"></Button>
             <TextBox VerticalAlignment="Center" Height="25" Width="250" Padding="3"
-                     Text="{Binding FilterBox, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                     Text="{Binding FilterBox, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     Background="{Binding FilterValidity}">
                 <TextBox.InputBindings>
                     <KeyBinding Key="Enter"
                                 Command="{Binding ApplyFilter}"/>

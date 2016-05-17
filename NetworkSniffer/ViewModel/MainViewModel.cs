@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Drawing;
 
 namespace NetworkSniffer.ViewModel
 {
@@ -219,6 +220,8 @@ namespace NetworkSniffer.ViewModel
                 {
                     IsFilterEnabled = true;
                 }
+                FilterValidity = "Transparent";
+
                 RaisePropertyChanged("FilterBox");
             }
         }
@@ -324,6 +327,20 @@ namespace NetworkSniffer.ViewModel
                 RaisePropertyChanged("IsFilterEnabled");
             }
         }
+
+        private string filterValidity;
+        public string FilterValidity
+        {
+            get
+            {
+                return filterValidity;
+            }
+            set
+            {
+                filterValidity = value;
+                RaisePropertyChanged("FilterValidity");
+            }
+        }
         #endregion
 
         #region Methods
@@ -378,9 +395,11 @@ namespace NetworkSniffer.ViewModel
         private void AddToFilteredList(IPPacket newPacket)
         {
             // If the filterString is empty, just add newPacket to the FilterPacketList
-            if (String.IsNullOrEmpty(filter))
+            // and set filter validity to default since there is no filter
+            if (string.IsNullOrEmpty(filter))
             {
                 FilteredPacketList.Add(newPacket);
+                FilterValidity = "Transparent";
                 return;
             }
 
@@ -454,13 +473,19 @@ namespace NetworkSniffer.ViewModel
             }
 
             // If none of the substrings uses the proper syntax, ignore it and add packet
-            // as if there was no filter at all.
+            // as if there was no filter at all. Filter is not valid so paint it red.
             if (filterList.Count == 0 && SrcIPList.Count == 0 && DestIPList.Count == 0 &&
                 SrcPortList.Count == 0 && DestPortList.Count == 0 &&
                 HigherLengthList.Count == 0 && LowerLengthList.Count == 0)
             {
                 FilteredPacketList.Add(newPacket);
+                FilterValidity = "LightSalmon";
                 return;
+            }
+            // Else filter is valid
+            else
+            {
+                FilterValidity = "LightGreen";
             }
 
             bool ProtocolRule = true;
@@ -590,7 +615,7 @@ namespace NetworkSniffer.ViewModel
                 HigherLengthRule == true)
             {
                 FilteredPacketList.Add(newPacket);
-            }
+            }            
         }
 
         /// <summary>
@@ -845,6 +870,10 @@ namespace NetworkSniffer.ViewModel
                 StatsHandler.CaptureStartTime = DateTime.Now;
                 StatsHandler.Timer.Start();
             }
+
+            SelectedPacketTree.Clear();
+            HexPacketData = "";
+            CharPacketData = "";
             IsClearEnabled = false;
         }
 
