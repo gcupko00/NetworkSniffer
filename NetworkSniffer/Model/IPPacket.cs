@@ -69,6 +69,7 @@ namespace NetworkSniffer.Model
                 TCPPacket = new List<TCPPacket>();
                 UDPPacket = new List<UDPPacket>();
                 ICMPPacket = new List<ICMPPacket>();
+                IGMPPacket = new List<IGMPPacket>();
 
                 // Add header info and packet message to PacketContents collection
                 PopulatePacketContents(byteHeaderLength);
@@ -135,6 +136,11 @@ namespace NetworkSniffer.Model
         public List<ICMPPacket> ICMPPacket { get; set; }
 
         /// <summary>
+        /// Holds IP message if transport protocol is IGMP
+        /// </summary>
+        public List<IGMPPacket> IGMPPacket { get; set; }
+
+        /// <summary>
         /// Composite collection that stores both header and message
         /// </summary>
         public IList PacketContent
@@ -146,7 +152,8 @@ namespace NetworkSniffer.Model
                     new CollectionContainer() { Collection = IPHeader },
                     new CollectionContainer() { Collection = TCPPacket },
                     new CollectionContainer() { Collection = UDPPacket },
-                    new CollectionContainer() { Collection = ICMPPacket }
+                    new CollectionContainer() { Collection = ICMPPacket },
+                    new CollectionContainer() { Collection = IGMPPacket }
                 };
             }
         }
@@ -166,6 +173,10 @@ namespace NetworkSniffer.Model
             if (IPHeader[0].TransportProtocol == 1)
             {
                 ICMPPacket.Add(new ICMPPacket(byteIPMessage, byteIPMessage.Length));
+            }
+            else if(IPHeader[0].TransportProtocol == 2)
+            {
+                IGMPPacket.Add(new IGMPPacket(byteIPMessage, byteIPMessage.Length));
             }
             else if(IPHeader[0].TransportProtocol == 6)
             {
