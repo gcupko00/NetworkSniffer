@@ -1,6 +1,5 @@
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using Microsoft.VisualBasic;
 using NetworkSniffer.Model;
 using System;
 using System.Collections.Generic;
@@ -12,7 +11,6 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Drawing;
 
 namespace NetworkSniffer.ViewModel
 {
@@ -29,6 +27,21 @@ namespace NetworkSniffer.ViewModel
         private InterfaceMonitor monitor;
         private string filter;
         private readonly object packetListLock = new object();
+
+        // List of supported protocols
+        private List<string> protocolList;
+
+        // List of IP addresses from src/dest syntax
+        private List<string> srcIPList;
+        private List<string> destIPList;
+
+        // List of Ports from sp/dp syntax
+        private List<string> srcPortList;
+        private List<string> destPortList;
+
+        // List of Lengths from length>/length< syntax
+        private List<string> higherLengthList;
+        private List<string> lowerLengthList;
         #endregion
 
         #region Constructors
@@ -48,6 +61,15 @@ namespace NetworkSniffer.ViewModel
             ResetFilter = new RelayCommand(() => ResetFilterExecute());
             ApplyFilter = new RelayCommand(() => ApplyFilterExecute());
             RefreshDeviceAddressList = new RelayCommand(() => RefreshDeviceAddressListExecute());
+
+            // Initializing the list of valid filter conditions
+            protocolList = new List<string>();
+            srcIPList = new List<string>();
+            destIPList = new List<string>();
+            srcPortList = new List<string>();
+            destPortList = new List<string>();
+            higherLengthList = new List<string>();
+            lowerLengthList = new List<string>();
 
             DeviceAddressList = new ObservableCollection<string>();
             PacketList = new ObservableCollection<IPPacket>();
@@ -395,126 +417,60 @@ namespace NetworkSniffer.ViewModel
         private void AddToFilteredList(IPPacket newPacket)
         {
             // If the filterString is empty, just add newPacket to the FilterPacketList
-            // and set filter validity to default since there is no filter
             if (string.IsNullOrEmpty(filter))
             {
                 FilteredPacketList.Add(newPacket);
-                FilterValidity = "Transparent";
                 return;
-            }
-
-            // Split filter into substrings and make it all uppercase
-            List<string> filterList = new List<string>(filter.ToUpper().Split(' '));
-
-            // List of IP addresses from src/dest syntax
-            List<string> SrcIPList = new List<string>();
-            List<string> DestIPList = new List<string>();
-
-            // List of Ports from sp/dp syntax
-            List<string> SrcPortList = new List<string>();
-            List<string> DestPortList = new List<string>();
-
-            // List of Lengths from length>/length< syntax
-            List<string> HigherLengthList = new List<string>();
-            List<string> LowerLengthList = new List<string>();
-
-            // A list of allowed filters
-            string[] allowedProtocols = { "UDP", "TCP", "IGMP", "ICMP", "DNS" };
-            // After cleaning all the garbage, filterList should contain only strings
-            // from allowedProtocols
-
-            // Remove all substrings that are not in list of allowed filters
-            // But if a substring is src/dest ip or sp/dp port, tranfser it to its List
-            for (int i = filterList.Count - 1; i >= 0; i--)
-            {
-                // Next two If conditions will add IP addresses to IP Lists, if there are any
-                if (filterList[i].Contains("SRC="))
-                {
-                    SrcIPList = ValidIPAddress(SrcIPList, filterList[i]);
-                }
-                else if (filterList[i].Contains("DEST="))
-                {
-                    DestIPList = ValidIPAddress(DestIPList, filterList[i]);
-                }
-
-                // Next two If conditions will add Ports to Port Lists, if there are any
-                else if (filterList[i].Contains("SP="))
-                {
-                    SrcPortList = ValidPort(SrcPortList, filterList[i]);
-                }
-                else if (filterList[i].Contains("DP="))
-                {
-                    DestPortList = ValidPort(DestPortList, filterList[i]);
-                }
-
-                // Next two If conditions will add Length to Length Lists, if there are any
-                else if (filterList[i].Contains("LENGTH>"))
-                {
-                    HigherLengthList = ValidIPLength(HigherLengthList, filterList[i]);
-                }
-                else if (filterList[i].Contains("LENGTH<"))
-                {
-                    LowerLengthList = ValidIPLength(LowerLengthList, filterList[i]);
-                }
-
-                // This else keeps only allowedProtocols in filterList
-                else
-                {
-                    // If substring is a protocol from AllowedProtocol list,
-                    // don't remove it and continue
-                    string[] check = Strings.Filter(allowedProtocols, filterList[i], true);
-                    if (check != null && check.Length > 0)
-                    {
-                        continue;
-                    }
-                }
-                // Cleaning the garbage
-                filterList.RemoveAt(i);
             }
 
             // If none of the substrings uses the proper syntax, ignore it and add packet
-            // as if there was no filter at all. Filter is not valid so paint it red.
-            if (filterList.Count == 0 && SrcIPList.Count == 0 && DestIPList.Count == 0 &&
-                SrcPortList.Count == 0 && DestPortList.Count == 0 &&
-                HigherLengthList.Count == 0 && LowerLengthList.Count == 0)
+            // as if there was no filter at all.
+            if (protocolList.Count == 0 && srcIPList.Count == 0 && destIPList.Count == 0 &&
+                srcPortList.Count == 0 && destPortList.Count == 0 &&
+                higherLengthList.Count == 0 && lowerLengthList.Count == 0)
             {
                 FilteredPacketList.Add(newPacket);
-                FilterValidity = "LightSalmon";
                 return;
             }
-            // Else filter is valid
-            else
-            {
-                FilterValidity = "LightGreen";
-            }
 
+            // These are rules a newPacket must satisfy to be added in the FilteredPacketList.
+            // By default all rules are true, so in case one of the condition list is empty
+            // a newPacket could be added to FilteredList. Otherwise it is set to false once it
+            // enters foreach loop where it must satisfy the conditon to be set to true
             bool ProtocolRule = true;
-            foreach (string filterString in filterList)
+            bool SrcIPRule = true;
+            bool DstIPRule = true;
+            bool SrcPortRule = true;
+            bool DestPortRule = true;
+            bool LowerLengthRule = true;
+            bool HigherLengthRule = true;
+
+            foreach (string protocol in protocolList)
             {
                 ProtocolRule = false;
-                if (filterString.Equals("UDP") && newPacket.UDPPacket.Count > 0)
+                if (protocol.Equals("UDP") && newPacket.UDPPacket.Count > 0)
                 {
                     ProtocolRule = true;
                     break;
                 }
-                else if (filterString.Equals("TCP") && newPacket.TCPPacket.Count > 0)
+                else if (protocol.Equals("TCP") && newPacket.TCPPacket.Count > 0)
                 {
                     ProtocolRule = true;
                     break;
                 }
-                else if (filterString.Equals("IGMP") &&
+                else if (protocol.Equals("IGMP") &&
                     newPacket.IPHeader[0].TransportProtocolName == "IGMP")
                 {
                     ProtocolRule = true;
                     break;
                 }
-                else if (filterString.Equals("ICMP") &&
+                else if (protocol.Equals("ICMP") &&
                     newPacket.IPHeader[0].TransportProtocolName == "ICMP")
                 {
                     ProtocolRule = true;
                     break;
                 }
-                else if (filterString.Equals("DNS") && 
+                else if (protocol.Equals("DNS") && 
                     newPacket.UDPPacket.Count > 0 &&
                     (newPacket.UDPPacket[0].UDPHeader[0].DestinationPort == 53 ||
                     newPacket.UDPPacket[0].UDPHeader[0].SourcePort == 53))
@@ -524,8 +480,7 @@ namespace NetworkSniffer.ViewModel
                 }
             }
 
-            bool SrcIPRule = true;
-            foreach (string ip in SrcIPList)
+            foreach (string ip in srcIPList)
             {
                 SrcIPRule = false;
                 if (ip == newPacket.IPHeader[0].SourceIPAddress.ToString())
@@ -535,8 +490,7 @@ namespace NetworkSniffer.ViewModel
                 }
             }
 
-            bool DstIPRule = true;
-            foreach (string ip in DestIPList)
+            foreach (string ip in destIPList)
             {
                 DstIPRule = false;
                 if (ip == newPacket.IPHeader[0].DestinationIpAddress.ToString())
@@ -546,8 +500,7 @@ namespace NetworkSniffer.ViewModel
                 }
             }
 
-            bool SrcPortRule = true;
-            foreach (string port in SrcPortList)
+            foreach (string port in srcPortList)
             {
                 SrcPortRule = false;
                 if (newPacket.TCPPacket.Count > 0 &&
@@ -564,8 +517,7 @@ namespace NetworkSniffer.ViewModel
                 }
             }
 
-            bool DestPortRule = true;
-            foreach (string port in DestPortList)
+            foreach (string port in destPortList)
             {
                 DestPortRule = false;
                 if (newPacket.TCPPacket.Count > 0 &&
@@ -582,9 +534,8 @@ namespace NetworkSniffer.ViewModel
                 }
             }
 
-            bool LowerLengthRule = true;
             ushort packetLength = newPacket.IPHeader[0].TotalLength;
-            foreach (string LowerLength in LowerLengthList)
+            foreach (string LowerLength in lowerLengthList)
             {
                 LowerLengthRule = false;
                 ushort lowerLenght = ushort.Parse(LowerLength);
@@ -596,8 +547,7 @@ namespace NetworkSniffer.ViewModel
                 }
             }
 
-            bool HigherLengthRule = true;
-            foreach (string HigherLength in HigherLengthList)
+            foreach (string HigherLength in higherLengthList)
             {
                 HigherLengthRule = false;
                 ushort higherLenght = ushort.Parse(HigherLength);
@@ -698,7 +648,7 @@ namespace NetworkSniffer.ViewModel
                         LengthIPList.Add(LengthString);
                     }
                     // So if list already contains one element, replace it with higher or lower
-                    // if needed, depending on the list type(LowerLengthList or HigherLengthList) 
+                    // if needed, depending on the list type(lowerLengthList or higherLengthList) 
                     else
                     {
                         if (HigherBool)
@@ -790,6 +740,99 @@ namespace NetworkSniffer.ViewModel
             CharPacketData = charStringBuilder.ToString();
             HexPacketData = hexStringBuilder.ToString();
         }
+
+        /// <summary>
+        /// Clears all filter lists - conditions
+        /// </summary>
+        private void ClearFilterLists()
+        {
+            protocolList.Clear();
+            srcIPList.Clear();
+            destIPList.Clear();
+            srcPortList.Clear();
+            destPortList.Clear();
+            higherLengthList.Clear();
+            lowerLengthList.Clear();
+        }
+
+        /// <summary>
+        /// Parse filter string into a list of valid filter conditions
+        /// </summary>
+        private void ParseFilterConditions()
+        {
+            // Set filter validity to default since there is no filter
+            if (string.IsNullOrEmpty(filter))
+            {
+                FilterValidity = "Transparent";
+                return;
+            }
+
+            // Split filter into substrings and make it all uppercase
+            List<string> filterList = new List<string>(filter.ToUpper().Split(' '));
+
+            // A list of allowed supported protocols
+            string[] allowedProtocols = { "UDP", "TCP", "IGMP", "ICMP", "DNS" };
+
+            // Remove all substrings that are not in list of allowed filters
+            // But if a substring is src/dest ip or sp/dp port, tranfser it to its List
+            for (int i = filterList.Count - 1; i >= 0; i--)
+            {
+                // Next two If conditions will add IP addresses to IP Lists, if there are any
+                if (filterList[i].Contains("SRC="))
+                {
+                    srcIPList = ValidIPAddress(srcIPList, filterList[i]);
+                }
+                else if (filterList[i].Contains("DEST="))
+                {
+                    destIPList = ValidIPAddress(destIPList, filterList[i]);
+                }
+
+                // Next two If conditions will add Ports to Port Lists, if there are any
+                else if (filterList[i].Contains("SP="))
+                {
+                    srcPortList = ValidPort(srcPortList, filterList[i]);
+                }
+                else if (filterList[i].Contains("DP="))
+                {
+                    destPortList = ValidPort(destPortList, filterList[i]);
+                }
+
+                // Next two If conditions will add Length to Length Lists, if there are any
+                else if (filterList[i].Contains("LENGTH>"))
+                {
+                    higherLengthList = ValidIPLength(higherLengthList, filterList[i]);
+                }
+                else if (filterList[i].Contains("LENGTH<"))
+                {
+                    lowerLengthList = ValidIPLength(lowerLengthList, filterList[i]);
+                }
+
+                // Fill the protocol list with strings from AllowedProtocol string array
+                else
+                {
+                    foreach (string protocol in allowedProtocols)
+                    {
+                        if (string.Equals(protocol, filterList[i]))
+                        {
+                            if (protocolList.Contains(filterList[i]) == false)
+                            {
+                                protocolList.Add(filterList[i]);
+                            }
+                        }
+                    }
+                }
+            }
+            // Filter is not valid so paint it red.
+            if (protocolList.Count == 0 && srcIPList.Count == 0 && destIPList.Count == 0 &&
+                srcPortList.Count == 0 && destPortList.Count == 0 &&
+                higherLengthList.Count == 0 && lowerLengthList.Count == 0)
+            {
+                FilterValidity = "LightSalmon";
+                return;
+            }
+            // Else filter is valid and paint it green.
+            FilterValidity = "LightGreen";
+        }
         #endregion
 
         #region Commands
@@ -862,7 +905,6 @@ namespace NetworkSniffer.ViewModel
         {
             PacketList.Clear();
             FilteredPacketList.Clear();
-            filter = FilterBox;
             StatsHandler.Timer.Stop();
 
             if (monitor != null)
@@ -882,8 +924,7 @@ namespace NetworkSniffer.ViewModel
         private void ResetFilterExecute()
         {
             FilterBox = "";
-            filter = "";
-            FilterAllPackets();
+            ApplyFilterExecute();
             IsFilterEnabled = false;
             IsResetEnabled = false;
         }
@@ -892,9 +933,11 @@ namespace NetworkSniffer.ViewModel
 
         private void ApplyFilterExecute()
         {
+            ClearFilterLists();
             filter = FilterBox;
-            IsFilterEnabled = false;
+            ParseFilterConditions();
             FilterAllPackets();
+            IsFilterEnabled = false;
         }
 
         public ICommand RefreshDeviceAddressList { get; private set; }
