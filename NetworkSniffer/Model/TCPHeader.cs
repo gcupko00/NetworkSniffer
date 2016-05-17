@@ -36,7 +36,7 @@ namespace NetworkSniffer.Model
 
             WindowSize = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
 
-            Checksum = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
+            Checksum = IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
 
             UrgentPointer = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16()); 
 
@@ -104,7 +104,7 @@ namespace NetworkSniffer.Model
 
         public ushort WindowSize { get; set; }
 
-        public ushort Checksum { get; set; }
+        public short Checksum { get; set; }
 
         public ushort UrgentPointer { get; set; }
         #endregion

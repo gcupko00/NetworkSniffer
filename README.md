@@ -17,7 +17,7 @@ A network sniffer made in WPF using MVVM architectural pattern.
 ### Suported protocols
 - TCP - parsed
 - UDP - parsed
-- ICMP - recognized (to be parsed in future versions)
+- ICMP - parsed
 - IGMP - recognized (to be parsed in future versions)
 - DNS - parsed
 

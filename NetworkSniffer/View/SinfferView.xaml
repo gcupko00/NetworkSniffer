@@ -144,6 +144,9 @@
                 <HierarchicalDataTemplate DataType="{x:Type model:UDPPacket}" ItemsSource="{Binding Path=PacketContent}">
                     <TextBlock Text="UDP Packet"></TextBlock>
                 </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type model:ICMPPacket}" ItemsSource="{Binding Path=PacketContent}">
+                    <TextBlock Text="ICMP Packet"></TextBlock>
+                </HierarchicalDataTemplate>
                 <HierarchicalDataTemplate DataType="{x:Type model:DNSPacket}" ItemsSource="{Binding Path=PacketContent}">
                     <TextBlock Text="DNS Packet"></TextBlock>
                 </HierarchicalDataTemplate>
@@ -252,6 +255,26 @@
                         <DockPanel>
                             <TextBlock Text="   Checksum: "></TextBlock>
                             <TextBlock Text="{Binding Checksum}"></TextBlock>
+                        </DockPanel>
+                    </StackPanel>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type model:ICMPHeader}">
+                    <StackPanel>
+                        <DockPanel>
+                            <TextBlock Text="   Type: "></TextBlock>
+                            <TextBlock Text="{Binding Type}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="   Code: "></TextBlock>
+                            <TextBlock Text="{Binding Code}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="   Checksum: "></TextBlock>
+                            <TextBlock Text="{Binding Checksum}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="   Rest of Header: "></TextBlock>
+                            <TextBlock Text="{Binding RestOfHeader}"></TextBlock>
                         </DockPanel>
                     </StackPanel>
                 </DataTemplate>

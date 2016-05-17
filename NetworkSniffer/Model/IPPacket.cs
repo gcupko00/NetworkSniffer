@@ -68,6 +68,7 @@ namespace NetworkSniffer.Model
                 IPHeader = new List<IPHeader>();
                 TCPPacket = new List<TCPPacket>();
                 UDPPacket = new List<UDPPacket>();
+                ICMPPacket = new List<ICMPPacket>();
 
                 // Add header info and packet message to PacketContents collection
                 PopulatePacketContents(byteHeaderLength);
@@ -129,6 +130,11 @@ namespace NetworkSniffer.Model
         public List<UDPPacket> UDPPacket { get; set; }
 
         /// <summary>
+        /// Holds IP message if transport protocol is ICMP
+        /// </summary>
+        public List<ICMPPacket> ICMPPacket { get; set; }
+
+        /// <summary>
         /// Composite collection that stores both header and message
         /// </summary>
         public IList PacketContent
@@ -139,7 +145,8 @@ namespace NetworkSniffer.Model
                 {
                     new CollectionContainer() { Collection = IPHeader },
                     new CollectionContainer() { Collection = TCPPacket },
-                    new CollectionContainer() { Collection = UDPPacket }
+                    new CollectionContainer() { Collection = UDPPacket },
+                    new CollectionContainer() { Collection = ICMPPacket }
                 };
             }
         }
@@ -154,10 +161,13 @@ namespace NetworkSniffer.Model
         /// <param name="headerLength">Length of packet header used to parse it in the IPHeader constructor</param>
         private void PopulatePacketContents(byte headerLength)
         {
-            // add header info
             IPHeader.Add(new IPHeader(byteIPHeader, headerLength));
 
-            if(IPHeader[0].TransportProtocol == 6)
+            if (IPHeader[0].TransportProtocol == 1)
+            {
+                ICMPPacket.Add(new ICMPPacket(byteIPMessage, byteIPMessage.Length));
+            }
+            else if(IPHeader[0].TransportProtocol == 6)
             {
                 TCPPacket.Add(new TCPPacket(byteIPMessage, byteIPMessage.Length));
             }
