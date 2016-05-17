@@ -46,11 +46,14 @@
                 </TextBox.InputBindings>
             </TextBox>
             <Button Content="Filter" VerticalAlignment="Center" Height="25" Padding="10 0" Margin="5 0"
-                     Command="{Binding ApplyFilter}"></Button>
+                    Command="{Binding ApplyFilter}"
+                    IsEnabled="{Binding IsFilterEnabled}"></Button>
             <Button Content="Reset" VerticalAlignment="Center" Height="25" Padding="10 0" Margin="0 0 5 0"
-                    Command="{Binding ResetFilter}"></Button>
+                    Command="{Binding ResetFilter}"
+                    IsEnabled="{Binding IsResetEnabled}"></Button>
             <Button Content="Clear" VerticalAlignment="Center" Height="25" Padding="10 0"
-                    Command="{Binding ClearPacketList}"></Button>
+                    Command="{Binding ClearPacketList}"
+                    IsEnabled="{Binding IsClearEnabled}"></Button>
             <DockPanel HorizontalAlignment="Right">
                 <Button Content="Help" VerticalAlignment="Center" Height="25" Width="70" Padding="10 0" Margin="5 0"
                     Command="{Binding OpenHelp}"></Button>

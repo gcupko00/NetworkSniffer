@@ -1,18 +1,17 @@
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using System.Windows.Input;
+using Microsoft.VisualBasic;
+using NetworkSniffer.Model;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net;
-using NetworkSniffer.Model;
 using System.Net.Sockets;
-using System;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Data;
-using System.Text;
-using System.Windows.Documents;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using Microsoft.VisualBasic;
+using System.Windows.Input;
 
 namespace NetworkSniffer.ViewModel
 {
@@ -210,6 +209,16 @@ namespace NetworkSniffer.ViewModel
             set
             {
                 filterBox = value;
+                IsResetEnabled = true;
+                IsFilterEnabled = true;
+                if (string.Equals(filterBox, filter))
+                {
+                    IsFilterEnabled = false;
+                }
+                else
+                {
+                    IsFilterEnabled = true;
+                }
                 RaisePropertyChanged("FilterBox");
             }
         }
@@ -264,6 +273,57 @@ namespace NetworkSniffer.ViewModel
                 RaisePropertyChanged("IsStopEnabled");
             }
         }
+
+        private bool isClearEnabled = false;
+        /// <summary>
+        /// Used to enable/disable clear button
+        /// </summary>
+        public bool IsClearEnabled
+        {
+            get
+            {
+                return isClearEnabled;
+            }
+            set
+            {
+                isClearEnabled = value;
+                RaisePropertyChanged("IsClearEnabled");
+            }
+        }
+
+        private bool isResetEnabled = false;
+        /// <summary>
+        /// Used to enable/disable reset button
+        /// </summary>
+        public bool IsResetEnabled
+        {
+            get
+            {
+                return isResetEnabled;
+            }
+            set
+            {
+                isResetEnabled = value;
+                RaisePropertyChanged("IsResetEnabled");
+            }
+        }
+
+        private bool isFilterEnabled = false;
+        /// <summary>
+        /// Used to enable/disable filter button
+        /// </summary>
+        public bool IsFilterEnabled
+        {
+            get
+            {
+                return isFilterEnabled;
+            }
+            set
+            {
+                isFilterEnabled = value;
+                RaisePropertyChanged("IsFilterEnabled");
+            }
+        }
         #endregion
 
         #region Methods
@@ -301,6 +361,7 @@ namespace NetworkSniffer.ViewModel
             {
                 PacketList.Add(newPacket);
             }
+            IsClearEnabled = true;
 
             lock (filteredPacketList)
             {
@@ -324,8 +385,7 @@ namespace NetworkSniffer.ViewModel
             }
 
             // Split filter into substrings and make it all uppercase
-            filter = filter.ToUpper();
-            List<string> filterList = new List<string>(filter.Split(' '));
+            List<string> filterList = new List<string>(filter.ToUpper().Split(' '));
 
             // List of IP addresses from src/dest syntax
             List<string> SrcIPList = new List<string>();
@@ -361,21 +421,21 @@ namespace NetworkSniffer.ViewModel
                 // Next two If conditions will add Ports to Port Lists, if there are any
                 else if (filterList[i].Contains("SP="))
                 {
-                    SrcPortList = ValidPort(SrcPortList , filterList[i]);
+                    SrcPortList = ValidPort(SrcPortList, filterList[i]);
                 }
                 else if (filterList[i].Contains("DP="))
                 {
-                    DestPortList = ValidPort(DestPortList , filterList[i]);
+                    DestPortList = ValidPort(DestPortList, filterList[i]);
                 }
 
                 // Next two If conditions will add Length to Length Lists, if there are any
                 else if (filterList[i].Contains("LENGTH>"))
                 {
-                    HigherLengthList = ValidIPLength(HigherLengthList , filterList[i]);
+                    HigherLengthList = ValidIPLength(HigherLengthList, filterList[i]);
                 }
                 else if (filterList[i].Contains("LENGTH<"))
                 {
-                    LowerLengthList = ValidIPLength(LowerLengthList , filterList[i]);
+                    LowerLengthList = ValidIPLength(LowerLengthList, filterList[i]);
                 }
 
                 // This else keeps only allowedProtocols in filterList
@@ -502,7 +562,7 @@ namespace NetworkSniffer.ViewModel
             foreach (string LowerLength in LowerLengthList)
             {
                 LowerLengthRule = false;
-                ushort lowerLenght = UInt16.Parse(LowerLength);
+                ushort lowerLenght = ushort.Parse(LowerLength);
                 
                 if (lowerLenght > packetLength)
                 {
@@ -515,7 +575,7 @@ namespace NetworkSniffer.ViewModel
             foreach (string HigherLength in HigherLengthList)
             {
                 HigherLengthRule = false;
-                ushort higherLenght = UInt16.Parse(HigherLength);
+                ushort higherLenght = ushort.Parse(HigherLength);
                 
                 if (higherLenght < packetLength)
                 {
@@ -524,6 +584,7 @@ namespace NetworkSniffer.ViewModel
                 }
             }
 
+            // If newPacket satisfies all the filter rules, add it to filteredPacketList
             if (ProtocolRule == true && SrcIPRule == true && DstIPRule == true &&
                 SrcPortRule == true && DestPortRule == true && LowerLengthRule == true &&
                 HigherLengthRule == true)
@@ -575,7 +636,7 @@ namespace NetworkSniffer.ViewModel
             {
                 string PortString = Regex.Match(isValid, PatternPort).Value;
                 ushort usPort;
-                if (UInt16.TryParse(PortString, out usPort))
+                if (ushort.TryParse(PortString, out usPort))
                 {
                     PortList.Add(PortString);
                 }
@@ -596,14 +657,40 @@ namespace NetworkSniffer.ViewModel
             const string LowerPattern = @"^LENGTH<" + PatternLength;
             const string HigherPattern = @"^LENGTH>" + PatternLength;
 
-            if (Regex.Match(isValid, HigherPattern).Success ||
-                Regex.Match(isValid, LowerPattern).Success)
+            bool HigherBool = Regex.Match(isValid, HigherPattern).Success;
+            bool LowerBool = Regex.Match(isValid, LowerPattern).Success;
+            if (HigherBool || LowerBool)
             {
                 string LengthString = Regex.Match(isValid, PatternLength).Value;
-                ushort usPort;
-                if (UInt16.TryParse(LengthString, out usPort))
+                ushort IPLength;
+
+                // We actually store only one value per list, for example in "length>40 length>30"
+                // we only need tostore 40 in the list, because storing 30 is unnecessary
+                if (ushort.TryParse(LengthString, out IPLength))
                 {
-                    LengthIPList.Add(LengthString);
+                    if (LengthIPList.Count == 0)
+                    {
+                        LengthIPList.Add(LengthString);
+                    }
+                    // So if list already contains one element, replace it with higher or lower
+                    // if needed, depending on the list type(LowerLengthList or HigherLengthList) 
+                    else
+                    {
+                        if (HigherBool)
+                        {
+                            if (IPLength > short.Parse(LengthIPList[0]))
+                            {
+                                LengthIPList[0] = LengthString;
+                            }
+                        }
+                        else if (LowerBool)
+                        {
+                            if (IPLength < short.Parse(LengthIPList[0]))
+                            {
+                                LengthIPList[0] = LengthString;
+                            }
+                        }
+                    }
                 }
             }
 
@@ -758,6 +845,7 @@ namespace NetworkSniffer.ViewModel
                 StatsHandler.CaptureStartTime = DateTime.Now;
                 StatsHandler.Timer.Start();
             }
+            IsClearEnabled = false;
         }
 
         public ICommand ResetFilter { get; private set; }
@@ -767,6 +855,8 @@ namespace NetworkSniffer.ViewModel
             FilterBox = "";
             filter = "";
             FilterAllPackets();
+            IsFilterEnabled = false;
+            IsResetEnabled = false;
         }
 
         public ICommand ApplyFilter { get; private set; }
@@ -774,6 +864,7 @@ namespace NetworkSniffer.ViewModel
         private void ApplyFilterExecute()
         {
             filter = FilterBox;
+            IsFilterEnabled = false;
             FilterAllPackets();
         }
 
