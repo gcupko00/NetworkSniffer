@@ -22,7 +22,7 @@ namespace NetworkSniffer.Model
 
             Identification = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
 
-            ushortFlags = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
+            uShortFlags = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
 
             Questions = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
 
@@ -38,7 +38,7 @@ namespace NetworkSniffer.Model
         #region Properties
         public ushort Identification { get; private set; }
 
-        public ushort ushortFlags { get; private set; }
+        public ushort uShortFlags { get; private set; }
 
         // Flags does not provide info about Opcode and Rcode
         public string Flags
@@ -47,35 +47,35 @@ namespace NetworkSniffer.Model
             {
                 string value = "(";
 
-                if ((ushortFlags & 0x10) != 0)
+                if ((uShortFlags & 0x10) != 0)
                 {
                     value += "CD, ";
                 }
-                if ((ushortFlags & 0x20) != 0)
+                if ((uShortFlags & 0x20) != 0)
                 {
                     value += "AD, ";
                 }
-                if ((ushortFlags & 0x40) != 0)
+                if ((uShortFlags & 0x40) != 0)
                 {
                     value += "Z, ";
                 }
-                if ((ushortFlags & 0x80) != 0)
+                if ((uShortFlags & 0x80) != 0)
                 {
                     value += "RA, ";
                 }
-                if ((ushortFlags & 0x100) != 0)
+                if ((uShortFlags & 0x100) != 0)
                 {
                     value += "RD, ";
                 }
-                if ((ushortFlags & 0x200) != 0)
+                if ((uShortFlags & 0x200) != 0)
                 {
                     value += "TC, ";
                 }
-                if ((ushortFlags & 0x400) != 0)
+                if ((uShortFlags & 0x400) != 0)
                 {
                     value += "AA, ";
                 }
-                if ((ushortFlags & 0x8000) != 0)
+                if ((uShortFlags & 0x8000) != 0)
                 {
                     value += "QR";
                 }

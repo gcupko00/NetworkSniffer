@@ -4,10 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
+using System.Windows.Input;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.IO;
 using System.Windows;
+using System.Diagnostics;
 
 namespace NetworkSniffer.ViewModel
 {
@@ -21,6 +24,8 @@ namespace NetworkSniffer.ViewModel
         /// </summary>
         public HelpViewModel()
         {
+            GoToSourceRepository = new RelayCommand(() => GoToSourceRepositoryExecute());
+
             try
             {
                 // Stores help document as memory stream
@@ -42,5 +47,12 @@ namespace NetworkSniffer.ViewModel
         /// Used to store help document
         /// </summary>
         public RichTextBox HelpTextBox { get; private set; }
+
+        public ICommand GoToSourceRepository { get; set; }
+
+        private void GoToSourceRepositoryExecute()
+        {
+            Process.Start("https://github.com/gcupko00/NetworkSniffer");
+        }
     }
 }

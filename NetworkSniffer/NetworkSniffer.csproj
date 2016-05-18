@@ -89,6 +89,7 @@
     <Compile Include="Model\DNSPacket.cs" />
     <Compile Include="Model\ICMPHeader.cs" />
     <Compile Include="Model\ICMPPacket.cs" />
+    <Compile Include="Model\ICMPType.cs" />
     <Compile Include="Model\IGMPHeader.cs" />
     <Compile Include="Model\IGMPPacket.cs" />
     <Compile Include="Model\PacketLengthCategory.cs" />

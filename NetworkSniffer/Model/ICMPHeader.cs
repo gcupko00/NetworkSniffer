@@ -19,7 +19,7 @@ namespace NetworkSniffer.Model
 
             BinaryReader binaryReader = new BinaryReader(memoryStream);
 
-            Type = binaryReader.ReadByte();
+            ICMPType = new ICMPType(binaryReader.ReadByte());
 
             Code = binaryReader.ReadByte();
 
@@ -28,7 +28,7 @@ namespace NetworkSniffer.Model
             RestOfHeader = IPAddress.NetworkToHostOrder(binaryReader.ReadInt32());
         }
 
-        public byte Type { get; set; }
+        public ICMPType ICMPType { get; set; }
 
         public byte Code { get; set; }
 

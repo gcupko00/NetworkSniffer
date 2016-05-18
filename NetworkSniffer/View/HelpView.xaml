@@ -12,13 +12,15 @@
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
         <DockPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Padding="10 0" Margin="5 0">
+                <Hyperlink Command="{Binding GoToSourceRepository}">Source code</Hyperlink>
+            </TextBlock>
             <Button Content="Sniffer" HorizontalAlignment="Right" VerticalAlignment="Center" Height="25" Width="70" Padding="10 0" Margin="5 0"
                     DataContext="{Binding Main, Source={StaticResource Locator}}"
                     Command="{Binding OpenSniffer}"></Button>
         </DockPanel>
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <ContentPresenter Content="{Binding HelpTextBox}">
-            
             </ContentPresenter>
         </ScrollViewer>
     </Grid>

@@ -55,7 +55,7 @@ namespace NetworkSniffer.Model
                 uiFlagsAndOffset = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
 
                 // Shift right to get the flags value
-                Flags = (byte)(uiFlagsAndOffset >> 13);
+                ByteFlags = (byte)(uiFlagsAndOffset >> 13);
 
                 // Shift to the left and back to the right to get the offset
                 FragmentOffset = (ushort)(uiFlagsAndOffset << 3);
@@ -76,7 +76,7 @@ namespace NetworkSniffer.Model
                 SourceIPAddress = new IPAddress((uint)(binaryReader.ReadInt32()));
 
                 // Last four bytes are destination address
-                DestinationIpAddress = new IPAddress((uint)(binaryReader.ReadInt32()));
+                DestinationIPAddress = new IPAddress((uint)(binaryReader.ReadInt32()));
 
                 // *options
             }
@@ -98,20 +98,20 @@ namespace NetworkSniffer.Model
 
         public ushort Identification { get; set; }
         
-        public byte Flags { get; set; }
+        public byte ByteFlags { get; set; }
         
-        public string FlagsMeaning
+        public string Flags
         {
             get
             {
-                switch (Flags)
+                switch (ByteFlags)
                 {
                     case 1:
-                        return "MF";
+                        return "(MF)";
                     case 2:
-                        return "DF";
+                        return "(DF)";
                     case 3:
-                        return "DF MF";
+                        return "(DF, MF)";
                     default:
                         return "";
                 }
@@ -148,7 +148,7 @@ namespace NetworkSniffer.Model
 
         public IPAddress SourceIPAddress { get; set; }
 
-        public IPAddress DestinationIpAddress { get; set; }
+        public IPAddress DestinationIPAddress { get; set; }
 
         // *options
         #endregion

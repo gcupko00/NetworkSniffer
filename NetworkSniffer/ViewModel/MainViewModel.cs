@@ -233,7 +233,6 @@ namespace NetworkSniffer.ViewModel
             {
                 filterBox = value;
                 IsResetEnabled = true;
-                IsFilterEnabled = true;
                 if (string.Equals(filterBox, filter))
                 {
                     IsFilterEnabled = false;
@@ -493,7 +492,7 @@ namespace NetworkSniffer.ViewModel
             foreach (string ip in destIPList)
             {
                 DstIPRule = false;
-                if (ip == newPacket.IPHeader[0].DestinationIpAddress.ToString())
+                if (ip == newPacket.IPHeader[0].DestinationIPAddress.ToString())
                 {
                     DstIPRule = true;
                     break;
@@ -833,6 +832,16 @@ namespace NetworkSniffer.ViewModel
             // Else filter is valid and paint it green.
             FilterValidity = "LightGreen";
         }
+
+        /// <summary>
+        /// Empties selected packet tree and packet data properties
+        /// </summary>
+        private void ClearSelectedPacketData()
+        {
+            SelectedPacketTree.Clear();
+            HexPacketData = "";
+            CharPacketData = "";
+        }
         #endregion
 
         #region Commands
@@ -913,9 +922,7 @@ namespace NetworkSniffer.ViewModel
                 StatsHandler.Timer.Start();
             }
 
-            SelectedPacketTree.Clear();
-            HexPacketData = "";
-            CharPacketData = "";
+            ClearSelectedPacketData();
             IsClearEnabled = false;
         }
 
@@ -925,6 +932,7 @@ namespace NetworkSniffer.ViewModel
         {
             FilterBox = "";
             ApplyFilterExecute();
+            ClearSelectedPacketData();
             IsFilterEnabled = false;
             IsResetEnabled = false;
         }
@@ -937,7 +945,13 @@ namespace NetworkSniffer.ViewModel
             filter = FilterBox;
             ParseFilterConditions();
             FilterAllPackets();
+            ClearSelectedPacketData();
             IsFilterEnabled = false;
+
+            if(string.IsNullOrEmpty(filter))
+            {
+                IsResetEnabled = false;
+            }
         }
 
         public ICommand RefreshDeviceAddressList { get; private set; }
