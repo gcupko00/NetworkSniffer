@@ -61,6 +61,11 @@ namespace NetworkSniffer.Model
         public List<DNSPacket> DNSPacket { get; set; }
 
         /// <summary>
+        /// Holds info about application protocol
+        /// </summary>
+        public ApplicationProtocolType ApplicationProtocolType { get; private set; }
+
+        /// <summary>
         /// Composite collection that stores both header and message
         /// </summary>
         public IList PacketContent
@@ -93,6 +98,9 @@ namespace NetworkSniffer.Model
             {
                 DNSPacket.Add(new DNSPacket(byteTCPMessage, byteTCPMessage.Length));
             }
+
+            ApplicationProtocolType = new ApplicationProtocolType(TCPHeader[0].SourcePort,
+                                                                  TCPHeader[0].DestinationPort);
         }
         #endregion
     }

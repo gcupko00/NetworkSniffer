@@ -146,6 +146,9 @@
                         <TextBlock Text="{Binding IPHeader[0].DestinationIPAddress}"></TextBlock>
                         <TextBlock Text="; "></TextBlock>
                         <TextBlock Text="{Binding IPHeader[0].TransportProtocolName}"></TextBlock>
+                        <TextBlock Text="; "></TextBlock>
+                        <TextBlock Text="{Binding TCPPacket[0].ApplicationProtocolType.PortName}"></TextBlock>
+                        <TextBlock Text="{Binding UDPPacket[0].ApplicationProtocolType.PortName}"></TextBlock>
                     </DockPanel>                    
                 </HierarchicalDataTemplate>
                 <HierarchicalDataTemplate DataType="{x:Type model:TCPPacket}" ItemsSource="{Binding Path=PacketContent}">

@@ -15,11 +15,13 @@ A network sniffer made in WPF using MVVM architectural pattern.
 - Filtering incoming and received packets by transport protocol, IP address, port and length
 
 ### Suported protocols
-- TCP - parsed
-- UDP - parsed
-- ICMP - parsed
-- IGMP - parsed
-- DNS - parsed
+- TCP
+- UDP
+- ICMP
+- IGMP
+- DNS
+
+And many application protocols are identified (not parsed) - FTP, SSH, SMTP, HTTP, HTTPS...
 
 ---
 
