@@ -15,10 +15,11 @@ using System.Diagnostics;
 namespace NetworkSniffer.ViewModel
 {
     /// <summary>
-    /// This class contains properties that the HelpView can data bind to.
+    /// This class contains properties that the Help View can data bind to.
     /// </summary>
     public class HelpViewModel : ViewModelBase
     {
+        #region Constructors
         /// <summary>
         /// Initializes new instance of the HelpViewModel class
         /// </summary>
@@ -42,17 +43,25 @@ namespace NetworkSniffer.ViewModel
                 return;
             }
         }
-        
+        #endregion
+
+        #region Properties
         /// <summary>
         /// Used to store help document
         /// </summary>
         public RichTextBox HelpTextBox { get; private set; }
 
         public ICommand GoToSourceRepository { get; set; }
+        #endregion
 
+        #region Methods
+        /// <summary>
+        /// Opens source code repository on GitHub in a default browser
+        /// </summary>
         private void GoToSourceRepositoryExecute()
         {
             Process.Start("https://github.com/gcupko00/NetworkSniffer");
         }
+        #endregion
     }
 }

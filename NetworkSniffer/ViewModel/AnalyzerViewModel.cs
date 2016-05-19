@@ -6,8 +6,15 @@ using System.Collections.ObjectModel;
 
 namespace NetworkSniffer.ViewModel
 {
+    /// <summary>
+    /// This class contains properties that the Analyzer View displaying statistics can data bind to.
+    /// </summary>
     public class AnalyzerViewModel : ViewModelBase
     {
+        #region Constructors
+        /// <summary>
+        /// Initializes new instance of the AnalyzerViewModel class
+        /// </summary>
         public AnalyzerViewModel()
         {
             PacketLengthStats = StatsHandler.PacketLengthStats;
@@ -16,23 +23,22 @@ namespace NetworkSniffer.ViewModel
 
             StatsHandler.Timer.Elapsed += Timer_Elapsed;
         }
+        #endregion
 
-        private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            CapturingTime = (e.SignalTime - StatsHandler.CaptureStartTime).ToString().Substring(0, 12);
-            PacketsTotal = StatsHandler.PacketsTotal;
-            BytesTotal = StatsHandler.BytesTotal;
-            if ((e.SignalTime - StatsHandler.CaptureStartTime).Seconds != 0)
-            {
-                AveragePPS = Math.Round((double)PacketsTotal / (e.SignalTime - StatsHandler.CaptureStartTime).Seconds, 3);
-                AverageBPS = BytesTotal / (e.SignalTime - StatsHandler.CaptureStartTime).Seconds;
-            }
-        }
-
+        #region Properties
+        /// <summary>
+        /// List of packet length ranges with frequency of packets belonging to each range
+        /// </summary>
         public ObservableCollection<PacketLengthCategory> PacketLengthStats { get; private set; }
 
+        /// <summary>
+        /// Stores frequencies of packets using particular transport protocol
+        /// </summary>
         public ObservableCollection<TransportProtocolCategory> TransportProtocolStats { get; private set; }
 
+        /// <summary>
+        /// Time elapsed from the beginning of current capturing session
+        /// </summary>
         public string capturingTime;
         public string CapturingTime
         {
@@ -48,6 +54,9 @@ namespace NetworkSniffer.ViewModel
         }
 
         private int packetsTotal;
+        /// <summary>
+        /// Total packets received in current session
+        /// </summary>
         public int PacketsTotal
         {
             get
@@ -62,6 +71,9 @@ namespace NetworkSniffer.ViewModel
         }
 
         private int bytesTotal;
+        /// <summary>
+        /// Total bytes received in current session
+        /// </summary>
         public int BytesTotal
         {
             get
@@ -76,6 +88,9 @@ namespace NetworkSniffer.ViewModel
         }
 
         private double averagePPS;
+        /// <summary>
+        /// Packets per second
+        /// </summary>
         public double AveragePPS
         {
             get
@@ -90,6 +105,9 @@ namespace NetworkSniffer.ViewModel
         }
 
         private int averageBPS;
+        /// <summary>
+        /// Bytes per second
+        /// </summary>
         public int AverageBPS
         {
             get
@@ -102,5 +120,23 @@ namespace NetworkSniffer.ViewModel
                 RaisePropertyChanged("AverageBPS");
             }
         }
+        #endregion
+
+        #region Event handlers
+        /// <summary>
+        /// Handles timer change by updating CapturingTime and statistics properties
+        /// </summary>
+        private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            CapturingTime = (e.SignalTime - StatsHandler.CaptureStartTime).ToString().Substring(0, 12);
+            PacketsTotal = StatsHandler.PacketsTotal;
+            BytesTotal = StatsHandler.BytesTotal;
+            if ((e.SignalTime - StatsHandler.CaptureStartTime).Seconds != 0)
+            {
+                AveragePPS = Math.Round((double)PacketsTotal / (e.SignalTime - StatsHandler.CaptureStartTime).Seconds, 3);
+                AverageBPS = BytesTotal / (e.SignalTime - StatsHandler.CaptureStartTime).Seconds;
+            }
+        }
+        #endregion
     }
 }

@@ -8,7 +8,7 @@ namespace NetworkSniffer.Model
     public class ApplicationProtocolType
     {
         /// <summary>
-        /// Initializes new instance of ICMPType class
+        /// Initializes new instance of ApplicationProtocolType class
         /// </summary>
         /// <param name="SrcPort">Source port used to determine the protocol type</param>
         /// <param name="DestPort">Destination port used to determine the protocol type</param>

@@ -6,10 +6,16 @@ using System.Timers;
 
 namespace NetworkSniffer.ViewModel
 {
+    /// <summary>
+    /// This class conteins properties and methods to store and update traffic statistics
+    /// </summary>
     public static class StatsHandler
     {
+        #region Members
         private const int MTU = 1024 * 64;
+        #endregion
 
+        #region Properties
         public static ObservableCollection<PacketLengthCategory> PacketLengthStats = new ObservableCollection<PacketLengthCategory>()
         {
             new PacketLengthCategory("0-19"),
@@ -42,8 +48,13 @@ namespace NetworkSniffer.ViewModel
         public static Stopwatch watch = Stopwatch.StartNew();
 
         public static Timer Timer = new Timer(1);
+        #endregion
 
         #region Methods
+        /// <summary>
+        /// Updates traffic statistics according to the received packet characteristics
+        /// </summary>
+        /// <param name="newPacket">Received packet depending on which statistics are updated</param>
         public static void UpdateStats(IPPacket newPacket)
         {
             int newPacketLength = newPacket.IPHeader[0].TotalLength;
