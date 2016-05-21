@@ -12,9 +12,9 @@ A network sniffer made in WPF using MVVM architectural pattern.
 - Capturing and analyzing IP packets
 - Captured packets statistics tracking
 - Analyzing transport layer packets
-- Filtering incoming and received packets by transport protocol, IP address, port and length
+- Filtering incoming and outgoing packets by transport protocol, IP address, port and length
 
-### Suported protocols
+### Supported protocols
 - TCP
 - UDP
 - ICMP
