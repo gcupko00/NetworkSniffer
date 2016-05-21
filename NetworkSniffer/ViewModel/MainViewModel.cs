@@ -30,6 +30,8 @@ namespace NetworkSniffer.ViewModel
 
         // List of supported protocols
         private List<string> protocolList;
+        // This second list is for exlcuding protocols using filter option, exmaple: "!udp"
+        private List<string> protocolListToExclude;
 
         // List of IP addresses from src/dest syntax
         private List<string> srcIPList;
@@ -64,6 +66,7 @@ namespace NetworkSniffer.ViewModel
 
             // Initializing the list of valid filter conditions
             protocolList = new List<string>();
+            protocolListToExclude = new List<string>();
             srcIPList = new List<string>();
             destIPList = new List<string>();
             srcPortList = new List<string>();
@@ -424,8 +427,8 @@ namespace NetworkSniffer.ViewModel
 
             // If none of the substrings uses the proper syntax, ignore it and add packet
             // as if there was no filter at all.
-            if (protocolList.Count == 0 && srcIPList.Count == 0 && destIPList.Count == 0 &&
-                srcPortList.Count == 0 && destPortList.Count == 0 &&
+            if (protocolList.Count == 0 && protocolListToExclude.Count == 0 && srcIPList.Count == 0 &&
+                destIPList.Count == 0 && srcPortList.Count == 0 && destPortList.Count == 0 &&
                 higherLengthList.Count == 0 && lowerLengthList.Count == 0)
             {
                 FilteredPacketList.Add(newPacket);
@@ -436,7 +439,8 @@ namespace NetworkSniffer.ViewModel
             // By default all rules are true, so in case one of the condition list is empty
             // a newPacket could be added to FilteredList. Otherwise it is set to false once it
             // enters foreach loop where it must satisfy the conditon to be set to true
-            bool ProtocolRule = true;
+            bool IncludeProtocolRule = true;
+            bool ExcludeProtocolRule = false;
             bool SrcIPRule = true;
             bool DstIPRule = true;
             bool SrcPortRule = true;
@@ -444,39 +448,15 @@ namespace NetworkSniffer.ViewModel
             bool LowerLengthRule = true;
             bool HigherLengthRule = true;
 
-            foreach (string protocol in protocolList)
+            // Checking empty protocolList would change the default value of IncludeProtocolRule to false
+            if (protocolList.Count != 0)
             {
-                ProtocolRule = false;
-                if (protocol.Equals("UDP") && newPacket.UDPPacket.Count > 0)
-                {
-                    ProtocolRule = true;
-                    break;
-                }
-                else if (protocol.Equals("TCP") && newPacket.TCPPacket.Count > 0)
-                {
-                    ProtocolRule = true;
-                    break;
-                }
-                else if (protocol.Equals("IGMP") &&
-                    newPacket.IPHeader[0].TransportProtocolName == "IGMP")
-                {
-                    ProtocolRule = true;
-                    break;
-                }
-                else if (protocol.Equals("ICMP") &&
-                    newPacket.IPHeader[0].TransportProtocolName == "ICMP")
-                {
-                    ProtocolRule = true;
-                    break;
-                }
-                else if (protocol.Equals("DNS") && 
-                    newPacket.UDPPacket.Count > 0 &&
-                    (newPacket.UDPPacket[0].UDPHeader[0].DestinationPort == 53 ||
-                    newPacket.UDPPacket[0].UDPHeader[0].SourcePort == 53))
-                {
-                    ProtocolRule = true;
-                    break;
-                }
+                IncludeProtocolRule = ApplyProtocolRule(newPacket, protocolList);
+            }
+
+            if (protocolListToExclude.Count != 0)
+            {
+                ExcludeProtocolRule = ApplyProtocolRule(newPacket, protocolListToExclude);
             }
 
             foreach (string ip in srcIPList)
@@ -559,12 +539,83 @@ namespace NetworkSniffer.ViewModel
             }
 
             // If newPacket satisfies all the filter rules, add it to filteredPacketList
-            if (ProtocolRule == true && SrcIPRule == true && DstIPRule == true &&
-                SrcPortRule == true && DestPortRule == true && LowerLengthRule == true &&
-                HigherLengthRule == true)
+            if (IncludeProtocolRule == true && ExcludeProtocolRule == false && SrcIPRule == true &&
+                DstIPRule == true && SrcPortRule == true && DestPortRule == true &&
+                LowerLengthRule == true && HigherLengthRule == true)
             {
                 FilteredPacketList.Add(newPacket);
             }            
+        }
+
+        /// <summary>
+        /// Returns bool which indicates wheter the packet satisfies given protocol rule
+        /// </summary>
+        /// <param name="newPacket"></param>
+        /// <param name="ProtocolList"></param>
+        private bool ApplyProtocolRule(IPPacket newPacket, List<string> ProtocolList)
+        {
+            foreach (string protocol in ProtocolList)
+            {
+                if (protocol.Equals("UDP") && newPacket.UDPPacket.Count > 0)
+                {
+                    return true;
+                }
+                else if (protocol.Equals("TCP") && newPacket.TCPPacket.Count > 0)
+                {
+                    return true;
+                }
+                else if (protocol.Equals("IGMP") &&
+                    newPacket.IPHeader[0].TransportProtocolName == "IGMP")
+                {
+                    return true;
+                }
+                else if (protocol.Equals("ICMP") &&
+                    newPacket.IPHeader[0].TransportProtocolName == "ICMP")
+                {
+                    return true;
+                }
+                else if (protocol.Equals("DNS") && 
+                    newPacket.UDPPacket.Count > 0 &&
+                    (newPacket.UDPPacket[0].UDPHeader[0].DestinationPort == 53 ||
+                    newPacket.UDPPacket[0].UDPHeader[0].SourcePort == 53))
+                {
+                    return true;
+                }
+                else if (protocol.Equals("HTTPS") && 
+                    ((newPacket.UDPPacket.Count > 0 &&
+                     newPacket.UDPPacket[0].ApplicationProtocolType.PortName.Equals(protocol)) ||
+                     (newPacket.TCPPacket.Count > 0 &&
+                     newPacket.TCPPacket[0].ApplicationProtocolType.PortName.Equals(protocol))))
+                {
+                    return true;
+                }
+                else if (protocol.Equals("HTTP") && 
+                    ((newPacket.UDPPacket.Count > 0 &&
+                     newPacket.UDPPacket[0].ApplicationProtocolType.PortName.Equals(protocol)) ||
+                     (newPacket.TCPPacket.Count > 0 &&
+                     newPacket.TCPPacket[0].ApplicationProtocolType.PortName.Equals(protocol))))
+                {
+                    return true;
+                }
+                else if (protocol.Equals("SSH") && 
+                    ((newPacket.UDPPacket.Count > 0 &&
+                     newPacket.UDPPacket[0].ApplicationProtocolType.PortName.Equals(protocol)) ||
+                     (newPacket.TCPPacket.Count > 0 &&
+                     newPacket.TCPPacket[0].ApplicationProtocolType.PortName.Equals(protocol))))
+                {
+                    return true;
+                }
+                else if (protocol.Equals("IRC") && 
+                    ((newPacket.UDPPacket.Count > 0 &&
+                     newPacket.UDPPacket[0].ApplicationProtocolType.PortName.Equals(protocol)) ||
+                     (newPacket.TCPPacket.Count > 0 &&
+                     newPacket.TCPPacket[0].ApplicationProtocolType.PortName.Equals(protocol))))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -746,6 +797,7 @@ namespace NetworkSniffer.ViewModel
         private void ClearFilterLists()
         {
             protocolList.Clear();
+            protocolListToExclude.Clear();
             srcIPList.Clear();
             destIPList.Clear();
             srcPortList.Clear();
@@ -770,7 +822,8 @@ namespace NetworkSniffer.ViewModel
             List<string> filterList = new List<string>(filter.ToUpper().Split(' '));
 
             // A list of allowed supported protocols
-            string[] allowedProtocols = { "UDP", "TCP", "IGMP", "ICMP", "DNS" };
+            string[] allowedProtocols = { "UDP", "TCP", "IGMP", "ICMP", "DNS",
+                                          "HTTPS", "HTTP", "SSH", "IRC" };
 
             // Remove all substrings that are not in list of allowed filters
             // But if a substring is src/dest ip or sp/dp port, tranfser it to its List
@@ -811,19 +864,28 @@ namespace NetworkSniffer.ViewModel
                 {
                     foreach (string protocol in allowedProtocols)
                     {
+                        // Fills protocolList
                         if (string.Equals(protocol, filterList[i]))
                         {
                             if (protocolList.Contains(filterList[i]) == false)
                             {
-                                protocolList.Add(filterList[i]);
+                                protocolList.Add(protocol);
+                            }
+                        }
+                        // Fills the opposite list - protocolListToExclude
+                        if (string.Equals("!" + protocol, filterList[i]))
+                        {
+                            if (protocolListToExclude.Contains(filterList[i]) == false)
+                            {
+                                protocolListToExclude.Add(protocol);
                             }
                         }
                     }
                 }
             }
             // Filter is not valid so paint it red.
-            if (protocolList.Count == 0 && srcIPList.Count == 0 && destIPList.Count == 0 &&
-                srcPortList.Count == 0 && destPortList.Count == 0 &&
+            if (protocolList.Count == 0 && protocolListToExclude.Count == 0 && srcIPList.Count == 0 &&
+                destIPList.Count == 0 && srcPortList.Count == 0 && destPortList.Count == 0 &&
                 higherLengthList.Count == 0 && lowerLengthList.Count == 0)
             {
                 FilterValidity = "LightSalmon";
