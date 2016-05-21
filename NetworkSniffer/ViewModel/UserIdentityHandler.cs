@@ -22,11 +22,7 @@ namespace NetworkSniffer.ViewModel
                 WindowsPrincipal principal = new WindowsPrincipal(user);
                 isAdmin = principal.IsInRole(WindowsBuiltInRole.Administrator);
             }
-            catch (UnauthorizedAccessException ex)
-            {
-                isAdmin = false;
-            }
-            catch (Exception ex)
+            catch
             {
                 isAdmin = false;
             }

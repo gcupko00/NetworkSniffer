@@ -46,16 +46,7 @@ namespace NetworkSniffer.Model
                 byteHeaderLength >>= 4;
                 // Multiply by 4 to get actual length in bytes
                 byteHeaderLength *= 4;
-
-                // Next byte is TOS - ignore it for now
-                // binaryReader.ReadByte();
-
-                // Next two bytes hold total length of the packet (usTotalLength == length)
-                // ushort usTotalLength = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
-
-                //testing
-                //MessageBox.Show(length.ToString() + ", " + usTotalLength.ToString());
-
+                
                 // Copy header from byteBuffer to byteIPHeader
                 byteIPHeader = new byte[byteHeaderLength];
                 Array.Copy(byteBuffer, byteIPHeader, byteHeaderLength);
