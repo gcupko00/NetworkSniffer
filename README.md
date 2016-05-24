@@ -3,7 +3,7 @@
 A basic network sniffer made in WPF using MVVM architectural pattern.
 
 <a href="">
-<img src="https://raw.githubusercontent.com/gcupko00/NetworkSniffer/master/NetworkSniffer_demo1.gif" height="444" width="663" border="black"/>
+<img src="https://raw.githubusercontent.com/gcupko00/NetworkSniffer/master/NetworkSniffer_demo1.gif" height="450" width="780" border="black"/>
 </a>
 
 ---
