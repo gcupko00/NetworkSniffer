@@ -31,3 +31,5 @@ This application is made in WPF as a seminar project for a college course using 
 ### Made by
 <a href="https://github.com/gcupko00/">gcupko00</a></br>
 <a href="https://github.com/bolkonksy/">bolkonksy</a>
+
+<img src="https://raw.githubusercontent.com/gcupko00/NetworkSniffer/master/NetworkSniffer/Resources/korlo.png" height="auto" width="auto" />
