@@ -1,6 +1,6 @@
 # NetworkSniffer
 
-A network sniffer made in WPF using MVVM architectural pattern.
+A basic network sniffer made in WPF using MVVM architectural pattern.
 
 <a href="">
 <img src="https://raw.githubusercontent.com/gcupko00/NetworkSniffer/master/NetworkSniffer_demo.gif" height="444" width="663" border="black"/>
@@ -21,12 +21,12 @@ A network sniffer made in WPF using MVVM architectural pattern.
 - IGMP
 - DNS
 
-And many application protocols are identified (not parsed) - FTP, SSH, SMTP, HTTP, HTTPS...
+Most common application protocols are identified (but not parsed) - FTP, SSH, SMTP, HTTP, HTTPS and more.
 
 ---
 
 ## About
-This application is made as a seminar project for a college course.
+This application is made in WPF as a seminar project for a college course using an open source MVVM library <a href="https://mvvmlight.codeplex.com/">MVVM Light Toolkit</a>.
 
 ### Made by
 <a href="https://github.com/gcupko00/">gcupko00</a></br>
