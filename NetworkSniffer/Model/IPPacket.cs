@@ -29,11 +29,8 @@ namespace NetworkSniffer.Model
             try
             {
                 #region Buffer parsing
-                // Create MemoryStream out of received byte array
-                // *check if it is possible to use MemoryStream(byteBuffer)
                 MemoryStream memoryStream = new MemoryStream(byteBuffer, 0, length);
-
-                // Create BinaryReader out of MemoryStream
+                
                 BinaryReader binaryReader = new BinaryReader(memoryStream);
 
                 // First eight bytes are IP version and header length
@@ -61,8 +58,7 @@ namespace NetworkSniffer.Model
                 UDPPacket = new List<UDPPacket>();
                 ICMPPacket = new List<ICMPPacket>();
                 IGMPPacket = new List<IGMPPacket>();
-
-                // Add header info and packet message to PacketContents collection
+                
                 PopulatePacketContents(byteHeaderLength);
 
                 ReceiveTime = DateTime.Now.ToString("HH:mm:ss");

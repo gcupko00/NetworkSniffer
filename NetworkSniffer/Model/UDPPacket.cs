@@ -28,16 +28,12 @@ namespace NetworkSniffer.Model
         {
             try
             {
-                // Create MemoryStream out of received byte array
                 MemoryStream memoryStream = new MemoryStream(byteBuffer, 0, length);
-
-                // Create BinaryReader out of MemoryStream
+                
                 BinaryReader binaryReader = new BinaryReader(memoryStream);
-
-                // Copy header bytes from byteBuffer to byteUDPHeader
+                
                 Array.Copy(byteBuffer, byteUDPHeader, UDPHeaderSize);
-
-                // Copy message data to byteUDPMessage
+                
                 byteUDPMessage = new byte[length - UDPHeaderSize];
                 Array.Copy(byteBuffer, UDPHeaderSize, byteUDPMessage, 0, length - UDPHeaderSize);
 

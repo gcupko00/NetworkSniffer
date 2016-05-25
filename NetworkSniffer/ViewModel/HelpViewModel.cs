@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GalaSoft.MvvmLight;
+﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using System.Windows.Input;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.IO;
-using System.Windows;
 using System.Diagnostics;
+using System.IO;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace NetworkSniffer.ViewModel
 {
@@ -29,7 +24,6 @@ namespace NetworkSniffer.ViewModel
 
             try
             {
-                // Stores help document as memory stream
                 MemoryStream memoryResStream = new MemoryStream(Encoding.Default.GetBytes(HelpResource.Help));
 
                 HelpTextBox = new RichTextBox();

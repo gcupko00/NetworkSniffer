@@ -11,7 +11,6 @@ namespace NetworkSniffer.Model
     public class IPHeader
     {
         #region Constructors
-        // *create another constructor which takes already parsed fields as parameters
         /// <summary>
         /// Initializes new instance of IPHeader class
         /// </summary>
@@ -42,7 +41,6 @@ namespace NetworkSniffer.Model
                 InternetHeaderLength *= 4;
 
                 // Next byte is TOS
-                // *Parse to DSCP and ECN
                 TypeOfService = binaryReader.ReadByte();
 
                 // Next two bytes hold total length of the packet
@@ -77,8 +75,6 @@ namespace NetworkSniffer.Model
 
                 // Last four bytes are destination address
                 DestinationIPAddress = new IPAddress((uint)(binaryReader.ReadInt32()));
-
-                // *options
             }
             catch(Exception e)
             {
@@ -149,8 +145,6 @@ namespace NetworkSniffer.Model
         public IPAddress SourceIPAddress { get; set; }
 
         public IPAddress DestinationIPAddress { get; set; }
-
-        // *options
         #endregion
     }
 }

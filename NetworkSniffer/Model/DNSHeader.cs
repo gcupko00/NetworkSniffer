@@ -31,7 +31,6 @@ namespace NetworkSniffer.Model
             AuthorityRR = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
 
             AdditionalRR = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
-
         }
         #endregion
 

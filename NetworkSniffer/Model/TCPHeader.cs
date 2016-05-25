@@ -38,9 +38,7 @@ namespace NetworkSniffer.Model
 
             Checksum = IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
 
-            UrgentPointer = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16()); 
-
-            // *options
+            UrgentPointer = (ushort)IPAddress.NetworkToHostOrder(binaryReader.ReadInt16());
         }
         #endregion
 

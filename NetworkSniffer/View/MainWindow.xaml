@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:NetworkSniffer"
         mc:Ignorable="d"
         Title="Network Sniffer"
-        MinHeight="500" MinWidth="620"
+        MinHeight="500" MinWidth="900"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
     <Grid>
         <ContentPresenter Content="{Binding CurrentViewModel}">
