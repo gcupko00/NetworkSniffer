@@ -14,7 +14,7 @@
             Data templates definitions for dynamical rendering of views for a particular viewmodel type.
         -->
         <DataTemplate DataType="{x:Type vm:SnifferViewModel}">
-            <views:SinfferView />
+            <views:SnifferView />
         </DataTemplate>
         <DataTemplate DataType="{x:Type vm:AnalyzerViewModel}">
             <views:AnalyzerView />

@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="NetworkSniffer.View.SinfferView"
+﻿<UserControl x:Class="NetworkSniffer.View.SnifferView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -6,7 +6,8 @@
              xmlns:local="clr-namespace:NetworkSniffer.View"
              xmlns:model="clr-namespace:NetworkSniffer.Model"
              xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
-             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity" 
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:vm="clr-namespace:NetworkSniffer.ViewModel"
              MinHeight="400" MinWidth="600"
              HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
              DataContext="{Binding Main, Source={StaticResource Locator}}">
@@ -23,13 +24,18 @@
             <ColumnDefinition Width="5*" MinWidth="100"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <DockPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
-            <ComboBox Height="25" Width="130" Padding="10 0" Margin="5 0 0 0" VerticalContentAlignment="Center" ToolTip="Select IP address" 
-                      SelectedItem="{Binding SelectedAddress, Mode=TwoWay}"
-                      ItemsSource="{Binding DeviceAddressList}"
+            <ComboBox Height="25" Width="175" Padding="10 0" Margin="5 0 0 0" VerticalContentAlignment="Center" ToolTip="Select IP address" 
+                      SelectedItem="{Binding SelectedInterface, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      ItemsSource="{Binding InterfaceList}"
                       IsEnabled="{Binding IsInterfaceChangeAllowed}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding InterfaceNameAndAddress}"></TextBlock>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="DropDownOpened" >
-                        <i:InvokeCommandAction Command="{Binding RefreshDeviceAddressList}" />
+                        <i:InvokeCommandAction Command="{Binding RefreshInterfaceList}" />
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </ComboBox>

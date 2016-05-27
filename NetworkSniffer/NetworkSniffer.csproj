@@ -96,6 +96,7 @@
     <Compile Include="Model\ICMPType.cs" />
     <Compile Include="Model\IGMPHeader.cs" />
     <Compile Include="Model\IGMPPacket.cs" />
+    <Compile Include="Model\IPNetworkInterface.cs" />
     <Compile Include="Model\PacketLengthCategory.cs" />
     <Compile Include="Model\TCPHeader.cs" />
     <Compile Include="Model\UDPHeader.cs" />
@@ -116,8 +117,8 @@
     <Compile Include="View\HelpView.xaml.cs">
       <DependentUpon>HelpView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\SinfferView.xaml.cs">
-      <DependentUpon>SinfferView.xaml</DependentUpon>
+    <Compile Include="View\SnifferView.xaml.cs">
+      <DependentUpon>SnifferView.xaml</DependentUpon>
     </Compile>
     <Page Include="View\AnalyzerView.xaml">
       <SubType>Designer</SubType>
@@ -141,7 +142,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="View\SinfferView.xaml">
+    <Page Include="View\SnifferView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

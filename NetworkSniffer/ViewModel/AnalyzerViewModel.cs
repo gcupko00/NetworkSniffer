@@ -128,13 +128,13 @@ namespace NetworkSniffer.ViewModel
         /// </summary>
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            CapturingTime = (e.SignalTime - StatsHandler.CaptureStartTime).ToString().Substring(0, 12);
+            CapturingTime = StatsHandler.StopWatch.Elapsed.ToString().Substring(0, 12);
             PacketsTotal = StatsHandler.PacketsTotal;
             BytesTotal = StatsHandler.BytesTotal;
-            if ((e.SignalTime - StatsHandler.CaptureStartTime).Seconds != 0)
+            if (StatsHandler.StopWatch.Elapsed.Seconds != 0)
             {
-                AveragePPS = Math.Round((double)PacketsTotal / (e.SignalTime - StatsHandler.CaptureStartTime).Seconds, 3);
-                AverageBPS = BytesTotal / (e.SignalTime - StatsHandler.CaptureStartTime).Seconds;
+                AveragePPS = Math.Round((double)PacketsTotal / StatsHandler.StopWatch.Elapsed.Seconds, 3);
+                AverageBPS = BytesTotal / StatsHandler.StopWatch.Elapsed.Seconds;
             }
         }
         #endregion

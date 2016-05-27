@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -62,7 +63,7 @@ namespace NetworkSniffer.ViewModel
             ClearPacketList = new RelayCommand(() => ClearPacketListExecute());
             ResetFilter = new RelayCommand(() => ResetFilterExecute());
             ApplyFilter = new RelayCommand(() => ApplyFilterExecute());
-            RefreshDeviceAddressList = new RelayCommand(() => RefreshDeviceAddressListExecute());
+            RefreshInterfaceList = new RelayCommand(() => RefreshInterfaceListExecute());
 
             // Initializing the list of valid filter conditions
             protocolList = new List<string>();
@@ -74,11 +75,11 @@ namespace NetworkSniffer.ViewModel
             higherLengthList = new List<string>();
             lowerLengthList = new List<string>();
 
-            DeviceAddressList = new ObservableCollection<string>();
+            InterfaceList = new ObservableCollection<IPNetworkInterface>();
             PacketList = new ObservableCollection<IPPacket>();
             FilteredPacketList = new ObservableCollection<IPPacket>();
             SelectedPacketTree = new ObservableCollection<IPPacket>();
-            GetAddresses();
+            GetInterfaces();
         }
         #endregion
 
@@ -169,21 +170,21 @@ namespace NetworkSniffer.ViewModel
         /// <summary>
         /// List of available network interfaces addresses
         /// </summary>
-        public ObservableCollection<string> DeviceAddressList { get; private set; }
+        public ObservableCollection<IPNetworkInterface> InterfaceList { get; private set; }
 
-        private string selectedAddress;
+        private IPNetworkInterface selectedInterface;
         /// <summary>
         /// Currently selected IP address of an interface on which packets are being captured
         /// </summary>
-        public string SelectedAddress
+        public IPNetworkInterface SelectedInterface
         {
             get
             {
-                return selectedAddress;
+                return selectedInterface;
             }
             set
             {
-                selectedAddress = value;
+                selectedInterface = value;
                 RaisePropertyChanged("SelectedAddress");
             }
         }
@@ -369,25 +370,38 @@ namespace NetworkSniffer.ViewModel
 
         #region Methods
         /// <summary>
-        /// Gets IP addresses of all available hosts
+        /// Gets IP interfaces which are up
         /// </summary>
-        private void GetAddresses()
+        private void GetInterfaces()
         {
-            IPHostEntry HostEntry = Dns.GetHostEntry(Dns.GetHostName());
-            if (HostEntry.AddressList.Length > 0) {
-                foreach (IPAddress ip in HostEntry.AddressList)
+            foreach (NetworkInterface networkInterface in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                if (networkInterface.OperationalStatus == OperationalStatus.Up)
                 {
-                    if (ip.AddressFamily == AddressFamily.InterNetwork)
+                    foreach (UnicastIPAddressInformation ip in networkInterface.GetIPProperties().UnicastAddresses)
                     {
-                        DeviceAddressList.Add(ip.ToString());
+                        if (ip.Address.AddressFamily == AddressFamily.InterNetwork)
+                        {
+                            InterfaceList.Add(new IPNetworkInterface
+                            {
+                                InterfaceAddress = ip.Address.ToString(),
+                                InterfaceName = networkInterface.Name
+                            });
+                        }
                     }
                 }
             }
 
-            if (DeviceAddressList.Count > 0)
+            if (InterfaceList.Count > 0)
             {
-                SelectedAddress = DeviceAddressList[0];
+                SelectedInterface = InterfaceList[0];
             }
+            else
+            {
+                selectedInterface = null;
+            }
+
+            RaisePropertyChanged("SelectedInterface");
         }        
 
         /// <summary>
@@ -932,7 +946,7 @@ namespace NetworkSniffer.ViewModel
 
         private void StartCaptureExecute()
         {
-            if (string.IsNullOrEmpty(SelectedAddress))
+            if (SelectedInterface == null)
             {
                 MessageBox.Show("Please select device address");
             }
@@ -942,16 +956,24 @@ namespace NetworkSniffer.ViewModel
             }
             else
             {
-                if (monitor == null ) {
-                    monitor = new InterfaceMonitor(SelectedAddress);
-                    monitor.newPacketEventHandler += new InterfaceMonitor.NewPacketEventHandler(ReceiveNewPacket);
-                    monitor.StartCapture();
-                    StatsHandler.Timer.Start();
-                    StatsHandler.CaptureStartTime = DateTime.Now;
-                    IsInterfaceChangeAllowed = false;
-                    IsStartEnabled = false;
-                    IsStopEnabled = true;
+                try
+                {
+                    if (monitor == null)
+                    {
+                        monitor = new InterfaceMonitor(SelectedInterface.InterfaceAddress);
+                        monitor.newPacketEventHandler += new InterfaceMonitor.NewPacketEventHandler(ReceiveNewPacket);
+                        monitor.StartCapture();
+                        StatsHandler.Timer.Start();
+                        StatsHandler.StopWatch.Start();
+                        IsInterfaceChangeAllowed = false;
+                        IsStartEnabled = false;
+                        IsStopEnabled = true;
+                    }
                 }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message, "Could not start capture!");
+                }                
             }
         }
 
@@ -964,9 +986,14 @@ namespace NetworkSniffer.ViewModel
                 monitor.StopCapture();
                 monitor = null;
                 StatsHandler.Timer.Stop();
+                StatsHandler.StopWatch.Stop();
                 IsInterfaceChangeAllowed = true;
                 IsStartEnabled = true;
                 IsStopEnabled = false;
+            }
+            if (FilteredPacketList.Count == 0)
+            {
+                StatsHandler.StopWatch.Reset();
             }
         }
 
@@ -976,12 +1003,11 @@ namespace NetworkSniffer.ViewModel
         {
             PacketList.Clear();
             FilteredPacketList.Clear();
-            StatsHandler.Timer.Stop();
+            StatsHandler.StopWatch.Reset();
 
             if (monitor != null)
             {
-                StatsHandler.CaptureStartTime = DateTime.Now;
-                StatsHandler.Timer.Start();
+                StatsHandler.StopWatch.Start();
             }
 
             ClearSelectedPacketData();
@@ -1016,19 +1042,29 @@ namespace NetworkSniffer.ViewModel
             }
         }
 
-        public ICommand RefreshDeviceAddressList { get; private set; }
+        public ICommand RefreshInterfaceList { get; private set; }
 
-        private void RefreshDeviceAddressListExecute()
+        private void RefreshInterfaceListExecute()
         {
-            string prevSelectedAddress = SelectedAddress;
+            IPNetworkInterface prevSelectedAddress = SelectedInterface;
 
-            DeviceAddressList.Clear();
-            GetAddresses();
+            InterfaceList.Clear();
+            GetInterfaces();
 
-            if (DeviceAddressList.Contains(prevSelectedAddress))
+            if (InterfaceList.Contains(prevSelectedAddress))
             {
-                SelectedAddress = prevSelectedAddress;
+                SelectedInterface = prevSelectedAddress;
             }
+            else if (InterfaceList.Count > 0)
+            {
+                SelectedInterface = InterfaceList[0];
+            }
+            else
+            {
+                SelectedInterface = null;
+            }
+
+            RaisePropertyChanged("SelectedInterface");
         }
         #endregion
     }

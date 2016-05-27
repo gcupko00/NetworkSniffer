@@ -5,9 +5,9 @@ namespace NetworkSniffer.View
     /// <summary>
     /// Interaction logic for SinfferInterface.xaml
     /// </summary>
-    public partial class SinfferView : UserControl
+    public partial class SnifferView : UserControl
     {
-        public SinfferView()
+        public SnifferView()
         {
             InitializeComponent();
         }

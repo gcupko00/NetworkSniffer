@@ -1,5 +1,4 @@
 ﻿using NetworkSniffer.Model;
-using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Timers;
@@ -39,15 +38,13 @@ namespace NetworkSniffer.ViewModel
             new TransportProtocolCategory("Other"),
         };
 
-        public static DateTime CaptureStartTime { get; set; }
-
         public static int PacketsTotal { get; set; }
 
         public static int BytesTotal { get; set; }
-
-        public static Stopwatch watch = Stopwatch.StartNew();
-
+        
         public static Timer Timer = new Timer(1);
+
+        public static Stopwatch StopWatch = new Stopwatch();
         #endregion
 
         #region Methods
