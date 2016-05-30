@@ -9,7 +9,7 @@ namespace NetworkSniffer.Model
     /// </summary>
     class InterfaceMonitor
     {
-        #region Members
+        #region Fields
         private const uint MTU = 1024 * 64;
         private byte[] byteBufferData;
         private Socket socket;

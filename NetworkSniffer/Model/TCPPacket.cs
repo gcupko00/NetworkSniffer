@@ -12,7 +12,7 @@ namespace NetworkSniffer.Model
     /// </summary>
     public class TCPPacket
     {
-        #region Members
+        #region Fields
         private const uint TCPHeaderSize = 20;
         private byte[] byteTCPHeader = new byte[TCPHeaderSize];
         private byte[] byteTCPMessage;

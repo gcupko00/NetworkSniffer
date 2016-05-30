@@ -12,7 +12,7 @@ namespace NetworkSniffer.Model
     /// </summary>
     public class DNSPacket
     {
-        #region Members
+        #region Fields
         private const uint DNSHeaderSize = 12;
         private byte[] byteDNSHeader = new byte[DNSHeaderSize];
         private byte[] byteDNSMessage;

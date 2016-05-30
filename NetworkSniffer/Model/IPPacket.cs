@@ -12,7 +12,7 @@ namespace NetworkSniffer.Model
     /// </summary>
     public class IPPacket
     {
-        #region Members
+        #region Fields
         private byte[] byteIPHeader;
         private byte[] byteIPMessage;
         private uint packetID;

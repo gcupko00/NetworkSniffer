@@ -8,6 +8,7 @@ namespace NetworkSniffer.Model
     /// </summary>
     public class IGMPHeader
     {
+        #region Constructors
         /// <summary>
         /// Initializes new instance of IGMPHeader class
         /// </summary>
@@ -27,7 +28,9 @@ namespace NetworkSniffer.Model
 
             GroupAddress = new IPAddress((uint)binaryReader.ReadInt32());
         }
+        #endregion
 
+        #region Properties
         public byte Type { get; set; }
 
         public byte MaxResponseTime { get; set; }
@@ -35,5 +38,6 @@ namespace NetworkSniffer.Model
         public short Checksum { get; set; }
 
         public IPAddress GroupAddress { get; set; }
+        #endregion
     }
 }

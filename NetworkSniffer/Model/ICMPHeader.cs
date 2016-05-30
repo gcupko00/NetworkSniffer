@@ -8,6 +8,7 @@ namespace NetworkSniffer.Model
     /// </summary>
     public class ICMPHeader
     {
+        #region Constructors
         /// <summary>
         /// Initializes new instance of ICMPHeader class
         /// </summary>
@@ -27,7 +28,9 @@ namespace NetworkSniffer.Model
 
             RestOfHeader = IPAddress.NetworkToHostOrder(binaryReader.ReadInt32());
         }
+        #endregion
 
+        #region Properties
         public ICMPType ICMPType { get; set; }
 
         public byte Code { get; set; }
@@ -35,5 +38,6 @@ namespace NetworkSniffer.Model
         public short Checksum { get; set; }
 
         public int RestOfHeader { get; set; }
+        #endregion
     }
 }
