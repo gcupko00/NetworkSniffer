@@ -7,6 +7,7 @@ namespace NetworkSniffer.Model
     /// </summary>
     public class ApplicationProtocolType
     {
+        #region Constructors
         /// <summary>
         /// Initializes new instance of ApplicationProtocolType class
         /// </summary>
@@ -108,9 +109,12 @@ namespace NetworkSniffer.Model
                     break;
             }
         }
+        #endregion
 
+        #region Properties
         public ushort PortNumber { get; private set; }
 
         public string PortName { get; private set; }
+        #endregion
     }
 }

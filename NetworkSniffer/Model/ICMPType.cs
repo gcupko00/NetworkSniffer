@@ -5,6 +5,7 @@
     /// </summary>
     public class ICMPType
     {
+        #region Constructors
         /// <summary>
         /// Initializes new instance of ICMPType class
         /// </summary>
@@ -115,9 +116,12 @@
                 ICMPTypeName = "Reserved";
             }
         }
+        #endregion
 
+        #region Properties
         public byte ICMPNumber { get; private set; }
 
         public string ICMPTypeName { get; private set; }
+        #endregion
     }
 }

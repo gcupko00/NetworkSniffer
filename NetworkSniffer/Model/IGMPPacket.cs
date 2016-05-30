@@ -12,7 +12,7 @@ namespace NetworkSniffer.Model
     /// </summary>
     public class IGMPPacket
     {
-        #region Members
+        #region Fields
         private const uint IGMPHeaderSize = 8;
         private byte[] byteIGMPHeader = new byte[IGMPHeaderSize];
         private byte[] byteIGMPMessage;

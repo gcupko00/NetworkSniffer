@@ -20,7 +20,7 @@ namespace NetworkSniffer.ViewModel
     /// </summary>
     public class MainViewModel : ViewModelBase
     {
-        #region Members
+        #region Fields
         private SnifferViewModel snifferViewModel = new SnifferViewModel();
         private AnalyzerViewModel analyzerViewModel = new AnalyzerViewModel();
         private HelpViewModel helpViewModel = new HelpViewModel();

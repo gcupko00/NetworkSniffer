@@ -10,7 +10,7 @@ namespace NetworkSniffer.ViewModel
     /// </summary>
     public static class StatsHandler
     {
-        #region Members
+        #region Fields
         private const int MTU = 1024 * 64;
         #endregion
 
