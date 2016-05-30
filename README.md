@@ -32,6 +32,9 @@ This application is made in WPF as a seminar project for a college course using 
 <a href="https://github.com/gcupko00/">gcupko00</a></br>
 <a href="https://github.com/bolkonksy/">bolkonksy</a>
 
+##### Special thanks to
+Tester: <a href="https://github.com/athnix">athnix</a>
+
 <a href="http://sol-myr.deviantart.com/">
 <img src="https://raw.githubusercontent.com/gcupko00/NetworkSniffer/master/NetworkSniffer/Resources/korlo.png" height="auto" width="auto" />
 </a>
