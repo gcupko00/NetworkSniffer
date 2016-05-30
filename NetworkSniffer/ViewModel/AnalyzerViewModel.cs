@@ -39,7 +39,7 @@ namespace NetworkSniffer.ViewModel
         /// <summary>
         /// Time elapsed from the beginning of current capturing session
         /// </summary>
-        public string capturingTime;
+        private string capturingTime;
         public string CapturingTime
         {
             get

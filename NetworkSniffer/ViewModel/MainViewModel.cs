@@ -1003,7 +1003,7 @@ namespace NetworkSniffer.ViewModel
         {
             PacketList.Clear();
             FilteredPacketList.Clear();
-            StatsHandler.StopWatch.Reset();
+            StatsHandler.ResetStats();
 
             if (monitor != null)
             {

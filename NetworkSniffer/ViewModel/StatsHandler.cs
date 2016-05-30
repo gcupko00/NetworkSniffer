@@ -17,8 +17,7 @@ namespace NetworkSniffer.ViewModel
         #region Properties
         public static ObservableCollection<PacketLengthCategory> PacketLengthStats = new ObservableCollection<PacketLengthCategory>()
         {
-            new PacketLengthCategory("0-19"),
-            new PacketLengthCategory("20-39"),
+            new PacketLengthCategory("40<"),
             new PacketLengthCategory("40-79"),
             new PacketLengthCategory("80-159"),
             new PacketLengthCategory("320-639"),
@@ -26,7 +25,7 @@ namespace NetworkSniffer.ViewModel
             new PacketLengthCategory("1280-2559"),
             new PacketLengthCategory("1280-2559"),
             new PacketLengthCategory("2560-5119"),
-            new PacketLengthCategory("5119-")
+            new PacketLengthCategory(">5119")
         };
 
         public static ObservableCollection<TransportProtocolCategory> TransportProtocolStats = new ObservableCollection<TransportProtocolCategory>()
@@ -64,24 +63,46 @@ namespace NetworkSniffer.ViewModel
             SortPacketByProtocol(newPacketProtocol);
         }
 
+        /// <summary>
+        /// Resets all statistics
+        /// </summary>
+        public static void ResetStats()
+        {
+            StopWatch.Reset();
+            PacketsTotal = 0;
+            BytesTotal = 0;
+
+            foreach(PacketLengthCategory plc in PacketLengthStats)
+            {
+                plc.Count = 0;
+                plc.Percentage = 0;
+            }
+
+            foreach(TransportProtocolCategory tpc in TransportProtocolStats)
+            {
+                tpc.Count = 0;
+                tpc.Percentage = 0;
+            }
+        }
+
         private static void SortPacketByLength(int newPacketLength)
         {
-            if (newPacketLength < 20)
+            if (newPacketLength < 40)
             {
                 PacketLengthStats[0].Count++;
                 PacketLengthStats[0].Percentage = (double)PacketLengthStats[0].Count / PacketsTotal * 100;
             }
-            else if (newPacketLength < 40)
+            else if (newPacketLength < 80)
             {
                 PacketLengthStats[1].Count++;
                 PacketLengthStats[1].Percentage = (double)PacketLengthStats[1].Count / PacketsTotal * 100;
             }
-            else if (newPacketLength < 80)
+            else if (newPacketLength < 160)
             {
                 PacketLengthStats[2].Count++;
                 PacketLengthStats[2].Percentage = (double)PacketLengthStats[2].Count / PacketsTotal * 100;
             }
-            else if (newPacketLength < 160)
+            else if (newPacketLength < 320)
             {
                 PacketLengthStats[3].Count++;
                 PacketLengthStats[3].Percentage = (double)PacketLengthStats[3].Count / PacketsTotal * 100;
@@ -91,35 +112,30 @@ namespace NetworkSniffer.ViewModel
                 PacketLengthStats[4].Count++;
                 PacketLengthStats[4].Percentage = (double)PacketLengthStats[4].Count / PacketsTotal * 100;
             }
-            else if (newPacketLength < 320)
+            else if (newPacketLength < 640)
             {
                 PacketLengthStats[5].Count++;
                 PacketLengthStats[5].Percentage = (double)PacketLengthStats[5].Count / PacketsTotal * 100;
             }
-            else if (newPacketLength < 640)
+            else if (newPacketLength < 1280)
             {
                 PacketLengthStats[6].Count++;
                 PacketLengthStats[6].Percentage = (double)PacketLengthStats[6].Count / PacketsTotal * 100;
             }
-            else if (newPacketLength < 1280)
+            else if (newPacketLength < 2560)
             {
                 PacketLengthStats[7].Count++;
                 PacketLengthStats[7].Percentage = (double)PacketLengthStats[7].Count / PacketsTotal * 100;
             }
-            else if (newPacketLength < 2560)
+            else if (newPacketLength < 5120)
             {
                 PacketLengthStats[8].Count++;
                 PacketLengthStats[8].Percentage = (double)PacketLengthStats[8].Count / PacketsTotal * 100;
             }
-            else if (newPacketLength < 5120)
+            else
             {
                 PacketLengthStats[9].Count++;
                 PacketLengthStats[9].Percentage = (double)PacketLengthStats[9].Count / PacketsTotal * 100;
-            }
-            else
-            {
-                PacketLengthStats[10].Count++;
-                PacketLengthStats[10].Percentage = (double)PacketLengthStats[10].Count / PacketsTotal * 100;
             }
         }
 
