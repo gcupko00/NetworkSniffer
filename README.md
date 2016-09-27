@@ -29,7 +29,7 @@ Most common application protocols are identified (but not parsed) - FTP, SSH, SM
 This application is made in WPF as a seminar project for a college course using an open source MVVM library <a href="https://mvvmlight.codeplex.com/">MVVM Light Toolkit</a>.
 
 ### Made by
-<a href="https://github.com/gcupko00/">gcupko00</a></br>
+<a href="https://github.com/sklavko">gcupko00</a></br>
 <a href="https://github.com/bolkonksy/">bolkonksy</a>
 
 ##### Special thanks to
