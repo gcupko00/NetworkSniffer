@@ -20,9 +20,9 @@ namespace NetworkSniffer.ViewModel
             new PacketLengthCategory("40<"),
             new PacketLengthCategory("40-79"),
             new PacketLengthCategory("80-159"),
+            new PacketLengthCategory("160-319"),
             new PacketLengthCategory("320-639"),
             new PacketLengthCategory("640-1279"),
-            new PacketLengthCategory("1280-2559"),
             new PacketLengthCategory("1280-2559"),
             new PacketLengthCategory("2560-5119"),
             new PacketLengthCategory(">5119")
@@ -107,35 +107,30 @@ namespace NetworkSniffer.ViewModel
                 PacketLengthStats[3].Count++;
                 PacketLengthStats[3].Percentage = (double)PacketLengthStats[3].Count / PacketsTotal * 100;
             }
-            else if (newPacketLength < 320)
+            else if (newPacketLength < 640)
             {
                 PacketLengthStats[4].Count++;
                 PacketLengthStats[4].Percentage = (double)PacketLengthStats[4].Count / PacketsTotal * 100;
             }
-            else if (newPacketLength < 640)
+            else if (newPacketLength < 1280)
             {
                 PacketLengthStats[5].Count++;
                 PacketLengthStats[5].Percentage = (double)PacketLengthStats[5].Count / PacketsTotal * 100;
             }
-            else if (newPacketLength < 1280)
+            else if (newPacketLength < 2560)
             {
                 PacketLengthStats[6].Count++;
                 PacketLengthStats[6].Percentage = (double)PacketLengthStats[6].Count / PacketsTotal * 100;
             }
-            else if (newPacketLength < 2560)
+            else if (newPacketLength < 5120)
             {
                 PacketLengthStats[7].Count++;
                 PacketLengthStats[7].Percentage = (double)PacketLengthStats[7].Count / PacketsTotal * 100;
             }
-            else if (newPacketLength < 5120)
+            else
             {
                 PacketLengthStats[8].Count++;
                 PacketLengthStats[8].Percentage = (double)PacketLengthStats[8].Count / PacketsTotal * 100;
-            }
-            else
-            {
-                PacketLengthStats[9].Count++;
-                PacketLengthStats[9].Percentage = (double)PacketLengthStats[9].Count / PacketsTotal * 100;
             }
         }
 
